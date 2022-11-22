@@ -1,6 +1,6 @@
 # possibilico
 
-A new Flutter project.
+Flutter front end for our degree plan tracking app.
 
 ## Getting Started
 
