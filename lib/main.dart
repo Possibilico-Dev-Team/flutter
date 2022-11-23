@@ -45,7 +45,23 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const HomePage());
+  runApp(const MyApp());
+}
+
+//Firebase Auth
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamProvider<User?>.value(
+      value: AuthService().userChanges(),
+      initialData: AuthService().currentUser(),
+      child: const MaterialApp(
+        home: Wrapper(),
+      ),
+    );
+  }
 }
 
 //Parsed Course Data
@@ -287,6 +303,16 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFF05023),
         title: const Text("Possibilico - UTRGV"),
+        actions: [
+          TextButton(
+              onPressed: () {
+                AuthService().signOut();
+              },
+              child: const Text(
+                "Logout",
+                style: TextStyle(color: Colors.white),
+              ))
+        ],
       ),
       body: pages.elementAt(pageIndex),
       bottomNavigationBar: BottomNavigationBar(
@@ -308,21 +334,5 @@ class _HomePageState extends State<HomePage> {
         onTap: onItemTapped,
       ),
     ));
-  }
-}
-
-//Firebase Auth
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamProvider<User?>.value(
-      value: AuthService().userChanges(),
-      initialData: AuthService().currentUser(),
-      child: const MaterialApp(
-        home: Wrapper(),
-      ),
-    );
   }
 }
