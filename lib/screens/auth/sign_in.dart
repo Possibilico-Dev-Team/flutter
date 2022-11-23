@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:possibilico/screens/auth/sign_up.dart';
 import 'package:possibilico/services/auth.dart';
@@ -14,6 +15,7 @@ class _SignInState extends State<SignIn> {
   final AuthService _auth = AuthService();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  String? passwordError;
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +40,9 @@ class _SignInState extends State<SignIn> {
             const Padding(padding: EdgeInsets.only(top: 50.0)),
             TextField(
               obscureText: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Password',
+                errorText: passwordError,
               ),
               controller: passwordController,
             ),
@@ -49,11 +52,17 @@ class _SignInState extends State<SignIn> {
               onPressed: () async {
                 dynamic result = await _auth.signInWithEmail(
                     emailController.text, passwordController.text);
-                if (result == null) {
-                  print('Error: Sign In failed');
-                } else {
+                if (result is String) {
+                  setState(() {
+                    passwordError = result;
+                  });
+                } else if (result is User) {
                   print('Signed In!');
                   print(result);
+                } else {
+                  setState(() {
+                    passwordError = result.toString();
+                  });
                 }
               },
             ),
