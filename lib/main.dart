@@ -213,8 +213,8 @@ class CourseList extends StatelessWidget {
       itemCount: photos.length,
       itemBuilder: (context, index) {
         return ListTile(
-          leading: Icon(Icons.computer),
-          title: Text(photos[index].subject + " " + photos[index].number),
+          leading: const Icon(Icons.computer),
+          title: Text("${photos[index].subject} ${photos[index].number}"),
           subtitle: Text(photos[index].title),
         );
       },
@@ -228,21 +228,22 @@ class Schedule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: ListView(
-            shrinkWrap: true,
-            scrollDirection: Axis.vertical,
-            padding: const EdgeInsets.all(20.0),
-            children: <Widget>[
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Column(children: <Widget>[
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Column(children: calendarContainer("None")), //Hours
             Column(children: calendarContainer("Mon")), //Monday
             Column(children: calendarContainer("Tue")), //Tuesday
             Column(children: calendarContainer("Wed")), //Wednesday
             Column(children: calendarContainer("Thur")), //Thursday
-            Column(children: calendarContainer("Fri")),
-          ]) //Friday
-        ]));
+            Column(children: calendarContainer("Fri")), //Friday
+          ]),
+        ]),
+      ),
+    );
   }
 }
 
@@ -254,23 +255,22 @@ class Index extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Center(
-            child: FittedBox(
-                fit: BoxFit.fill,
-                child: Container(
-                    color: Colors.lightGreen,
-                    child: Column(children: [
-                      Image.network(
-                          'https://st3.depositphotos.com/6672868/13701/v/600/depositphotos_137014128-stock-illustration-user-profile-icon.jpg',
-                          scale: 1.5),
-                      const Text(
-                        "First, Last",
-                        textScaleFactor: 2.0,
-                      ),
-                      const Text("Graduation Year: 2024"),
-                      const Text("Major: Computer Science"),
-                    ])))));
+    return Center(
+        child: FittedBox(
+            fit: BoxFit.fill,
+            child: Container(
+                color: Colors.lightGreen,
+                child: Column(children: [
+                  Image.network(
+                      'https://st3.depositphotos.com/6672868/13701/v/600/depositphotos_137014128-stock-illustration-user-profile-icon.jpg',
+                      scale: 1.5),
+                  const Text(
+                    "First, Last",
+                    textScaleFactor: 2.0,
+                  ),
+                  const Text("Graduation Year: 2024"),
+                  const Text("Major: Computer Science"),
+                ]))));
   }
 }
 
