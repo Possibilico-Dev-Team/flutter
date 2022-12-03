@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:possibilico/screens/auth/sign_in.dart';
-import 'package:possibilico/screens/auth/sign_up.dart';
+import 'package:possibilico/screens/auth/signup/sign_up.dart';
 
 class Authenticate extends StatefulWidget {
   const Authenticate({super.key});

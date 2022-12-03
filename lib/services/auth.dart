@@ -18,7 +18,11 @@ class AuthService {
           email: email.replaceAll(" ", ""), password: password);
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      return e.message;
+      if (e.code == 'auth/wrong-password') {
+        return "Incorrect Password";
+      } else {
+        return e.message;
+      }
     } catch (e) {
       return e.toString();
     }
