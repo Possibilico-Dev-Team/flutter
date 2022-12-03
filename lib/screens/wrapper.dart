@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:possibilico/main.dart';
 import 'package:possibilico/screens/auth/authenticate.dart';
-import 'package:possibilico/screens/home/home.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -14,7 +14,7 @@ class Wrapper extends StatelessWidget {
     if (user == null) {
       return const Authenticate();
     } else {
-      return Home();
+      return const HomePage();
     }
   }
 }

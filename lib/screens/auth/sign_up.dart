@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:possibilico/services/auth.dart';
 
@@ -13,6 +14,7 @@ class _SignUpState extends State<SignUp> {
   final AuthService _auth = AuthService();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  String? passwordError;
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +39,29 @@ class _SignUpState extends State<SignUp> {
             const Padding(padding: EdgeInsets.only(top: 50.0)),
             TextField(
               obscureText: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Password',
+                errorText: passwordError,
               ),
               controller: passwordController,
             ),
             const Padding(padding: EdgeInsets.only(top: 50.0)),
             ElevatedButton(
               child: const Text('Sign Up'),
-              onPressed: () async => {
-                _auth.registerUserWithEmail(
-                    emailController.text, passwordController.text)
+              onPressed: () async {
+                dynamic result = await _auth.registerUserWithEmail(
+                    emailController.text, passwordController.text);
+                if (result is String) {
+                  setState(() {
+                    passwordError = result;
+                  });
+                } else if (result is User) {
+                  print(result);
+                } else {
+                  setState(() {
+                    passwordError = result.toString();
+                  });
+                }
               },
             ),
             const Spacer(
