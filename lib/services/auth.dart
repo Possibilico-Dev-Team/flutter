@@ -1,14 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:possibilico/models/possibilico_user.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Stream<User?> userChanges() {
-    return _auth.userChanges();
+  Stream<PossibilicoUser?> get user {
+    return _auth.userChanges().map<PossibilicoUser?>(
+        ((User? user) => user != null ? PossibilicoUser(user) : null));
   }
 
-  User? currentUser() {
-    return _auth.currentUser;
+  PossibilicoUser? currentUser() {
+    return PossibilicoUser(_auth.currentUser as User);
   }
 
   // sign in with email & password
@@ -21,9 +23,11 @@ class AuthService {
       if (e.code == 'auth/wrong-password') {
         return "Incorrect Password";
       } else {
+        print(e.message);
         return e.message;
       }
     } catch (e) {
+      print(e);
       return e.toString();
     }
   }
@@ -35,8 +39,10 @@ class AuthService {
           .createUserWithEmailAndPassword(email: email, password: password);
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
+      print(e.message);
       return e.message;
     } catch (e) {
+      print(e);
       return e.toString();
     }
   }

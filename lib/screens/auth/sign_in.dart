@@ -57,8 +57,7 @@ class _SignInState extends State<SignIn> {
                     passwordError = result;
                   });
                 } else if (result is User) {
-                  print('Signed In!');
-                  print(result);
+                  print('Sign in: $result');
                 } else {
                   setState(() {
                     passwordError = result.toString();
