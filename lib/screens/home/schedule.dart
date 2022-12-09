@@ -1,87 +1,109 @@
 import 'package:flutter/material.dart';
+import 'package:time_planner/time_planner.dart';
+import 'dart:math';
 
-//Calendar Block with Custom Text
-Widget calendarBlock(String text) {
-  return (Container(
-      width: 150,
-      height: 75,
-      decoration: BoxDecoration(border: Border.all(color: Colors.blueAccent)),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-      )));
+class Schedule extends StatefulWidget {
+  Schedule({Key? key}) : super(key: key);
+
+  @override
+  _ScheduleState createState() => _ScheduleState();
 }
 
-//Build Calendar Column
-List<Widget> calendarContainer(String day) {
-  List<Widget> outList = [];
-  switch (day) {
-    case "None":
-      outList.add(calendarBlock(""));
-      for (int i = 0; i <= 24; i++) {
-        outList.add(calendarBlock("$i:00"));
-      }
-      return outList;
-    case "Mon":
-      outList.add(calendarBlock("Monday"));
-      for (int i = 0; i <= 24; i++) {
-        outList.add(calendarBlock(""));
-      }
-      return outList;
-    case "Tue":
-      outList.add(calendarBlock("Tuesday"));
-      for (int i = 0; i <= 24; i++) {
-        outList.add(calendarBlock(""));
-      }
-      return outList;
-    case "Wed":
-      outList.add(calendarBlock("Wednesday"));
-      for (int i = 0; i <= 24; i++) {
-        outList.add(calendarBlock(""));
-      }
-      return outList;
-    case "Thur":
-      outList.add(calendarBlock("Thursday"));
-      for (int i = 0; i <= 24; i++) {
-        outList.add(calendarBlock(""));
-      }
-      return outList;
-    case "Fri":
-      outList.add(calendarBlock("Friday"));
-      for (int i = 0; i <= 24; i++) {
-        outList.add(calendarBlock(""));
-      }
-      return outList;
-    default:
-      outList.add(calendarBlock("None"));
-      for (int i = 0; i <= 24; i++) {
-        outList.add(calendarBlock(""));
-      }
-      return outList;
+class _ScheduleState extends State<Schedule> {
+  List<TimePlannerTask> tasks = [];
+
+  void _addObject(BuildContext context) {
+    List<Color?> colors = [
+      Colors.purple,
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.cyan
+    ];
+
+    setState(() {
+      tasks.add(
+        TimePlannerTask(
+          color: colors[Random().nextInt(colors.length)],
+          dateTime: TimePlannerDateTime(
+              day: Random().nextInt(10),
+              hour: Random().nextInt(14) + 6,
+              minutes: Random().nextInt(60)),
+          minutesDuration: Random().nextInt(90) + 30,
+          daysDuration: Random().nextInt(4) + 1,
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('You click on time planner object')));
+          },
+          child: Text(
+            'this is a demo',
+            style: TextStyle(color: Colors.grey[350], fontSize: 12),
+          ),
+        ),
+      );
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Random task added to time planner!')));
   }
-}
-
-//Schedule of classes, currently empty.
-class Schedule extends StatelessWidget {
-  const Schedule({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Column(children: <Widget>[
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Column(children: calendarContainer("None")), //Hours
-            Column(children: calendarContainer("Mon")), //Monday
-            Column(children: calendarContainer("Tue")), //Tuesday
-            Column(children: calendarContainer("Wed")), //Wednesday
-            Column(children: calendarContainer("Thur")), //Thursday
-            Column(children: calendarContainer("Fri")), //Friday
-          ]),
-        ]),
-      ),
-    );
+    return Center(
+        child: TimePlanner(
+            startHour: 2,
+            endHour: 24,
+            headers: [
+              TimePlannerTitle(
+                date: "7/20/2021",
+                title: "tuesday",
+              ),
+              TimePlannerTitle(
+                date: "7/21/2021",
+                title: "wednesday",
+              ),
+              TimePlannerTitle(
+                date: "7/22/2021",
+                title: "thursday",
+              ),
+              TimePlannerTitle(
+                date: "7/23/2021",
+                title: "friday",
+              ),
+              TimePlannerTitle(
+                date: "7/24/2021",
+                title: "saturday",
+              ),
+              TimePlannerTitle(
+                date: "7/25/2021",
+                title: "sunday",
+              ),
+              TimePlannerTitle(
+                date: "7/26/2021",
+                title: "monday",
+              ),
+              TimePlannerTitle(
+                date: "7/27/2021",
+                title: "tuesday",
+              ),
+              TimePlannerTitle(
+                date: "7/28/2021",
+                title: "wednesday",
+              ),
+              TimePlannerTitle(
+                date: "7/29/2021",
+                title: "thursday",
+              ),
+              TimePlannerTitle(
+                date: "7/30/2021",
+                title: "friday",
+              ),
+              TimePlannerTitle(
+                date: "7/31/2021",
+                title: "Saturday",
+              ),
+            ],
+            tasks: tasks,
+            style: TimePlannerStyle(showScrollBar: true)));
   }
 }

@@ -86,15 +86,17 @@ class CourseList extends StatelessWidget {
 //ListView(padding: const EdgeInsets.all(8),
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: photos.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          leading: const Icon(Icons.computer),
-          title: Text("${photos[index].subject} ${photos[index].number}"),
-          subtitle: Text(photos[index].title),
-        );
-      },
-    );
+    return Column(children: [
+      ListView.builder(
+        itemCount: photos.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            leading: const Icon(Icons.computer),
+            title: Text("${photos[index].subject} ${photos[index].number}"),
+            subtitle: Text(photos[index].title),
+          );
+        },
+      )
+    ]);
   }
 }
