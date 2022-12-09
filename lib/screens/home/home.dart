@@ -20,7 +20,7 @@ class HomePageState extends State<HomePage> {
     const Index(),
     Classes(subject: "ACCT"),
     Schedule(),
-    const DegreeTree(),
+    DegreeTree(),
   ];
   void onItemTapped(int index) {
     setState(() {

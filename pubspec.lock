@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.9"
+  arrow_path:
+    dependency: transitive
+    description:
+      name: arrow_path
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   async:
     dependency: transitive
     description:
@@ -149,6 +156,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  graphite:
+    dependency: "direct main"
+    description:
+      name: graphite
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   graphview:
     dependency: "direct main"
     description:
@@ -294,6 +308,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.1"
+  touchable:
+    dependency: transitive
+    description:
+      name: touchable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   typed_data:
     dependency: transitive
     description:
