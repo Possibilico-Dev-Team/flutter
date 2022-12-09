@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:possibilico/models/possibilico_user.dart';
 import 'package:possibilico/screens/auth/authenticate.dart';
 import 'package:possibilico/screens/auth/signup/onboarding.dart';
-import 'package:possibilico/screens/home/home.dart';
+import 'package:possibilico/screens/home/degree_tree.dart';
 import 'package:provider/provider.dart';
 
 class Wrapper extends StatelessWidget {
@@ -32,7 +32,7 @@ class OnboardToggler extends StatelessWidget {
   Widget build(BuildContext context) {
     DocumentSnapshot? userData = Provider.of<DocumentSnapshot?>(context);
     if (userData?.data() != null) {
-      return const HomePage();
+      return const DegreeTree();
     } else {
       return const OnBoard();
     }
