@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:possibilico/models/possibilico_user.dart';
+import 'package:possibilico/screens/home/degree_tree.dart';
 import 'package:possibilico/screens/wrapper.dart';
 import 'package:possibilico/services/auth.dart';
 import 'package:possibilico/services/db.dart';
@@ -60,7 +61,7 @@ class MyApp extends StatelessWidget {
       value: AuthService().user,
       initialData: AuthService().currentUser(),
       child: const MaterialApp(
-        home: Wrapper(),
+        home: DegreeTree(),
       ),
     );
   }
