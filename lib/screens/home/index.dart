@@ -95,13 +95,13 @@ Widget Header() {
               shape: BoxShape.circle,
               image: DecorationImage(
                   image: NetworkImage(
-                      'https://nntheblog2.b-cdn.net/wp-content/uploads/2022/02/Pochita-chainsaw-man-8.jpg'),
+                      'https://scontent.fftw1-1.fna.fbcdn.net/v/t39.30808-6/311835908_5983056418373420_1779428621412515513_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=pyDb_zw3JsEAX-nFRNI&_nc_ht=scontent.fftw1-1.fna&oh=00_AfBc0mFHUMHRBuMGWvh4VyR6YbDoNJD-Hy1vWrtfGYBjNQ&oe=63985B24'),
                   fit: BoxFit.fill),
             ),
           ),
           Container(
               padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-              child: Text("First Last", style: headerStyle)),
+              child: Text("Miguel Ramirez", style: headerStyle)),
         ]),
         Container(
           padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
@@ -116,35 +116,39 @@ Widget Header() {
       ])));
 }
 
+final ScrollController myScrollWorks = ScrollController();
+
 class Index extends StatelessWidget {
   const Index({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return (CustomScrollView(
-      slivers: <Widget>[
-        SliverToBoxAdapter(child: Container(child: Header())),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) {
-              return Center(
-                child: Card(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      const ListTile(
-                        leading: Icon(Icons.computer),
-                        title: Text("CSCI 1102"),
-                        subtitle: Text('Introduction to Computer Science.'),
+    return (PrimaryScrollController(
+        controller: myScrollWorks,
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverToBoxAdapter(child: Container(child: Header())),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  return Center(
+                    child: Card(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          const ListTile(
+                            leading: Icon(Icons.computer),
+                            title: Text("CSCI 1102"),
+                            subtitle: Text('Introduction to Computer Science.'),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    ));
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        )));
   }
 }
