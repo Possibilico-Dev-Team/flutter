@@ -15,18 +15,20 @@ String compileJSONRequest(pageNum, subject, term) {
 }
 
 //Requests JSON Data from UTRGV Servers
-Future<List<CourseData>> fetchCourseData(http.Client client) async {
+Future<List<CourseData>> fetchCourseData(
+    http.Client client, String subject) async {
   var finResponse;
   var response = await client
-      .get(Uri.parse(compileJSONRequest(1, "ENGL", 202310)), headers: {
+      .get(Uri.parse(compileJSONRequest(1, subject, 202310)), headers: {
     "Accept": "application/json",
     "Access-Control-Allow-Origin": "*",
   });
+  print(compileJSONRequest(1, subject, 202310));
   finResponse = jsonDecode(response.body)['data']['courseInfos'];
   var totPages = jsonDecode(response.body)['totalPages'];
   for (int i = 2; i <= totPages; i++) {
     response = await client
-        .get(Uri.parse(compileJSONRequest(i, "ENGL", 202310)), headers: {
+        .get(Uri.parse(compileJSONRequest(i, subject, 202310)), headers: {
       "Accept": "application/json",
       "Access-Control-Allow-Origin": "*",
     });
@@ -100,6 +102,7 @@ String fullHour(input) {
     return "";
   }
   bool pastTwelve = false;
+
   var hour = int.parse(input.substring(0, 2));
   var minutes = int.parse(input.substring(2, 4));
   if (hour > 12) {
@@ -126,65 +129,71 @@ String fullDays(input) {
   }
 }
 
+Scaffold getClasses(subject) {
+  return Scaffold(
+    body: FutureBuilder<List<CourseData>>(
+      future: fetchCourseData(http.Client(), subject),
+      builder: (context, snapshot) {
+        print(snapshot);
+        if (snapshot.hasError) {
+          return const Center(
+            child: Text('An error has occurred!'),
+          );
+        } else if (snapshot.hasData) {
+          var classDict = {};
+
+          for (var i = 0; i < snapshot.data!.length; i++) {
+            var faculty = "Section " +
+                snapshot.data![i].section +
+                " - " +
+                snapshot.data![i].facultyFirstName +
+                " " +
+                snapshot.data![i].facultyLastName +
+                " - CRN:" +
+                snapshot.data![i].crn +
+                "\n" +
+                fullHour(snapshot.data![i].start.toString()) +
+                " to " +
+                fullHour(snapshot.data![i].end.toString()) +
+                " - " +
+                fullDays(snapshot.data![i].days) +
+                "\n" +
+                snapshot.data![i].campus +
+                "\n";
+
+            var combined = snapshot.data![i].subject +
+                " " +
+                snapshot.data![i].number +
+                " - " +
+                snapshot.data![i].title +
+                "\nCredit Hours: " +
+                snapshot.data![i].creditHours.toString();
+            classDict.putIfAbsent(combined, () => []);
+            var finList = classDict[combined];
+            finList.add(faculty);
+            classDict[combined] = finList;
+          }
+
+          return CourseList(photos: classDict);
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    ),
+  );
+}
+
 //Classes page, shows the relevant classes.
 class Classes extends StatelessWidget {
-  const Classes({super.key});
+  String subject;
+
+  Classes({super.key, required this.subject});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: FutureBuilder<List<CourseData>>(
-        future: fetchCourseData(http.Client()),
-        builder: (context, snapshot) {
-          print(snapshot);
-          if (snapshot.hasError) {
-            return const Center(
-              child: Text('An error has occurred!'),
-            );
-          } else if (snapshot.hasData) {
-            var classDict = {};
-
-            for (var i = 0; i < snapshot.data!.length; i++) {
-              var faculty = "Section " +
-                  snapshot.data![i].section +
-                  " - " +
-                  snapshot.data![i].facultyFirstName +
-                  " " +
-                  snapshot.data![i].facultyLastName +
-                  " - CRN:" +
-                  snapshot.data![i].crn +
-                  "\n" +
-                  fullHour(snapshot.data![i].start.toString()) +
-                  " to " +
-                  fullHour(snapshot.data![i].end.toString()) +
-                  " - " +
-                  fullDays(snapshot.data![i].days) +
-                  "\n" +
-                  snapshot.data![i].campus +
-                  "\n";
-
-              var combined = snapshot.data![i].subject +
-                  " " +
-                  snapshot.data![i].number +
-                  " - " +
-                  snapshot.data![i].title +
-                  "\nCredit Hours: " +
-                  snapshot.data![i].creditHours.toString();
-              classDict.putIfAbsent(combined, () => []);
-              var finList = classDict[combined];
-              finList.add(faculty);
-              classDict[combined] = finList;
-            }
-
-            return CourseList(photos: classDict);
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
-      ),
-    );
+    return getClasses("MATE");
   }
 }
 
@@ -222,13 +231,177 @@ class CourseList extends StatelessWidget {
       }
       valuesList.add(finOut);
     }
-    return ListView.separated(
-      padding: const EdgeInsets.all(8),
-      itemCount: photos.keys.length,
-      itemBuilder: (BuildContext context, int index) {
-        return _buildExpandableTile(keysList[index], valuesList[index]);
-      },
-      separatorBuilder: (BuildContext context, int index) => const Divider(),
-    );
+    return CustomScrollView(slivers: <Widget>[
+      SliverToBoxAdapter(child: DropDown()),
+      SliverToBoxAdapter(
+          child: Container(
+              child: ListView.separated(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(8),
+        itemCount: photos.keys.length,
+        itemBuilder: (BuildContext context, int index) {
+          return _buildExpandableTile(keysList[index], valuesList[index]);
+        },
+        separatorBuilder: (BuildContext context, int index) => const Divider(),
+      )))
+    ]);
+  }
+}
+
+class DropDown extends StatefulWidget {
+  const DropDown({Key? key}) : super(key: key);
+
+  @override
+  _DropDownState createState() => _DropDownState();
+}
+
+class _DropDownState extends State<DropDown> {
+  // Initial Selected Value
+  String dropdownvalue = 'ACCT';
+
+  // List of items in our dropdown menu
+  var items = [
+    'ACCT',
+    'ANTH',
+    'ARAB',
+    'ARTS',
+    'ASLI',
+    'ASTR',
+    'BADM',
+    'BILC',
+    'BIOL',
+    'BLAW',
+    'BMED',
+    'CESL',
+    'CHEM',
+    'CHIN',
+    'CIVE',
+    'CLAS',
+    'CLSC',
+    'COMD',
+    'COMM',
+    'COUN',
+    'CRIJ',
+    'CSCI',
+    'CSHR',
+    'CYBI',
+    'DANC',
+    'DIET',
+    'ECED',
+    'ECON',
+    'EDBE',
+    'EDCI',
+    'EDFR',
+    'EDRE',
+    'EDSL',
+    'EDTC',
+    'EDUC',
+    'EDUL',
+    'EECE',
+    'EEMS',
+    'ELEE',
+    'ENGL',
+    'ENGT',
+    'ENST',
+    'ENTR',
+    'ENVR',
+    'EPSY',
+    'EXAR',
+    'FILM',
+    'FINA',
+    'FREN',
+    'GEOG',
+    'GEOL',
+    'GERM',
+    'GRAD',
+    'GSCM',
+    'GSST',
+    'GWSP',
+    'HGEN',
+    'HIST',
+    'HLTH',
+    'HONR',
+    'HOST',
+    'HPRS',
+    'HRPT',
+    'INDS',
+    'INFS',
+    'INTB',
+    'INTM',
+    'KINE',
+    'KORN',
+    'LDST',
+    'MANE',
+    'MARK',
+    'MARS',
+    'MASC',
+    'MATE',
+    'MATH',
+    'MECE',
+    'MGMT',
+    'MUAP',
+    'MUEN',
+    'MUSI',
+    'NURS',
+    'NUTR',
+    'OCCT',
+    'OTDE',
+    'PAFF',
+    'PHAS',
+    'PHIL',
+    'PHYS',
+    'POLS',
+    'PSCI',
+    'PSYC',
+    'QUMT',
+    'READ',
+    'REHS',
+    'RELS',
+    'RLIT',
+    'ROTC',
+    'SAFS',
+    'SOCI',
+    'SOCW',
+    'SPAN',
+    'SPED',
+    'STAT',
+    'THTF',
+    'TRSP',
+    'UNIV',
+    'UTCH',
+    'WRLS'
+  ];
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Container(
+          width: double.infinity,
+          child: Center(
+              child: DropdownButton(
+            // Initial Value
+            value: dropdownvalue,
+
+            // Down Arrow Icon
+            icon: const Icon(Icons.keyboard_arrow_down),
+
+            // Array list of items
+            items: items.map((String items) {
+              return DropdownMenuItem(
+                value: items,
+                child: Text(items),
+              );
+            }).toList(),
+            // After selecting the desired option,it will
+            // change button value to selected value
+            onChanged: (String? newValue) {
+              setState(() {
+                dropdownvalue = newValue!;
+                getClasses(newValue);
+              });
+            },
+          )))
+    ]));
   }
 }
