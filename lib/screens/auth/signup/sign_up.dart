@@ -14,7 +14,7 @@ class _SignUpState extends State<SignUp> {
   final AuthService _auth = AuthService();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  String? passwordError;
+  String passwordError = '';
 
   @override
   Widget build(BuildContext context) {

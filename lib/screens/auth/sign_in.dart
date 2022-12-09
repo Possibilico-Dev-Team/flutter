@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:possibilico/screens/auth/sign_up.dart';
+import 'package:possibilico/screens/auth/signup/sign_up.dart';
 import 'package:possibilico/services/auth.dart';
 
 class SignIn extends StatefulWidget {
@@ -57,8 +57,7 @@ class _SignInState extends State<SignIn> {
                     passwordError = result;
                   });
                 } else if (result is User) {
-                  print('Signed In!');
-                  print(result);
+                  print('Sign in: $result');
                 } else {
                   setState(() {
                     passwordError = result.toString();

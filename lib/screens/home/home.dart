@@ -1,33 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:possibilico/screens/home/index.dart';
+import 'package:possibilico/screens/home/degree_tree.dart';
+import 'package:possibilico/screens/home/schedule.dart';
+import 'package:possibilico/screens/home/course_list.dart';
 import 'package:possibilico/services/auth.dart';
 
-class Home extends StatelessWidget {
-  Home({super.key});
+//Home Page with Selector for Index, Classes or Schedule
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
-  final AuthService _auth = AuthService();
+  @override
+  HomePageState createState() => HomePageState();
+}
+
+class HomePageState extends State<HomePage> {
+  var pageIndex = 0;
+
+  var pages = [
+    const Index(),
+    const Classes(),
+    Schedule(),
+    const DegreeTree(),
+  ];
+  void onItemTapped(int index) {
+    setState(() {
+      pageIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return MaterialApp(
+        home: Scaffold(
       appBar: AppBar(
-        title: const Text('Possibilico'),
-        backgroundColor: Colors.blue[900],
-        elevation: 0.0,
-        actions: <Widget>[
-          TextButton.icon(
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.white,
-            ),
-            label: const Text(''),
-            onPressed: () async {
-              await _auth.signOut();
-            },
-          ),
+        backgroundColor: const Color(0xFFF05023),
+        title: const Text("Possibilico: A Degree-Planning Smart Application"),
+        actions: [
+          TextButton(
+              onPressed: () {
+                AuthService().signOut();
+              },
+              child: const Text(
+                "Logout",
+                style: TextStyle(color: Colors.white),
+              ))
         ],
       ),
-      body: Center(child: Text(_auth.currentUser()!.email as String)),
-    );
+      body: pages.elementAt(pageIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.grey,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school),
+            label: 'Classes',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event),
+            label: 'Schedule',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_tree),
+            label: 'Progress',
+          ),
+        ],
+        currentIndex: pageIndex,
+        onTap: onItemTapped,
+      ),
+    ));
   }
 }
