@@ -10,7 +10,8 @@ class AuthService {
   }
 
   PossibilicoUser? currentUser() {
-    return PossibilicoUser(_auth.currentUser as User);
+    return PossibilicoUser(
+        _auth.currentUser != null ? _auth.currentUser as User : null);
   }
 
   // sign in with email & password

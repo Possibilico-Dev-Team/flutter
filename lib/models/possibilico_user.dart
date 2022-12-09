@@ -7,12 +7,14 @@ class PossibilicoUser {
   Map<String, dynamic>? _properties;
   String? _id;
 
-  PossibilicoUser(User user) {
+  PossibilicoUser(User? user) {
     _userFirebase = user;
-    _id = user.uid;
-    initProps().then(
-      (value) => _properties = value,
-    );
+    if (user != null) {
+      _id = user.uid;
+      initProps().then(
+        (value) => _properties = value,
+      );
+    }
   }
 
   Future initProps() async {
@@ -45,8 +47,10 @@ class PossibilicoUser {
     _userFirebase = newUser;
   }
 
-  Stream<DocumentSnapshot> userData() {
-    DocumentReference ref = DataService().getDocRef('user', _id as String);
-    return ref.snapshots();
+  Stream<DocumentSnapshot>? userData() {
+    DocumentReference? ref = _userFirebase != null
+        ? DataService().getDocRef('user', _id as String)
+        : null;
+    return ref?.snapshots();
   }
 }
