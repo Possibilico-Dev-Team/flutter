@@ -2,6 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+String decodeSemesterCode(String input) {
+  if (input.length > 6) {
+    return input;
+  } else {
+    String year = input.substring(0, 4);
+    String sem = input.substring(4);
+    switch (sem) {
+      case "10":
+        year = (int.parse(year) - 1).toString();
+        return "Fall " + year;
+      case "20":
+        return "Spring " + year;
+      case "30":
+        return "Summer I " + year;
+      case "40":
+        return "Summer II " + year;
+      default:
+        break;
+    }
+    return input;
+  }
+}
+
 String compileJSONRequest(pageNum, subject, term) {
   var finResponse;
   var request =
@@ -16,19 +39,20 @@ String compileJSONRequest(pageNum, subject, term) {
 
 //Requests JSON Data from UTRGV Servers
 Future<List<CourseData>> fetchCourseData(
-    http.Client client, String subject) async {
+    http.Client client, String subject, String semester) async {
+  int intSem = int.parse(semester);
   var finResponse;
   var response = await client
-      .get(Uri.parse(compileJSONRequest(1, subject, 202310)), headers: {
+      .get(Uri.parse(compileJSONRequest(1, subject, intSem)), headers: {
     "Accept": "application/json",
     "Access-Control-Allow-Origin": "*",
   });
-  print(compileJSONRequest(1, subject, 202310));
+  print(compileJSONRequest(1, subject, intSem));
   finResponse = jsonDecode(response.body)['data']['courseInfos'];
   var totPages = jsonDecode(response.body)['totalPages'];
   for (int i = 2; i <= totPages; i++) {
     response = await client
-        .get(Uri.parse(compileJSONRequest(i, subject, 202310)), headers: {
+        .get(Uri.parse(compileJSONRequest(i, subject, intSem)), headers: {
       "Accept": "application/json",
       "Access-Control-Allow-Origin": "*",
     });
@@ -39,15 +63,6 @@ Future<List<CourseData>> fetchCourseData(
       .map<CourseData>((json) => CourseData.fromJson(json))
       .toList();
 }
-
-/*
- _____  _                             
-/  __ \| |                            
-| /  \/| |  __ _  ___  ___   ___  ___ 
-| |    | | / _` |/ __|/ __| / _ \/ __|
-| \__/\| || (_| |\__ \\__ \|  __/\__ \
- \____/|_| \__,_||___/|___/ \___||___/
-*/
 
 //Class for Course Data
 class CourseData {
@@ -129,136 +144,82 @@ String fullDays(input) {
   }
 }
 
-Scaffold getClasses(subject) {
-  return Scaffold(
-    body: FutureBuilder<List<CourseData>>(
-      future: fetchCourseData(http.Client(), subject),
-      builder: (context, snapshot) {
-        print(snapshot);
-        if (snapshot.hasError) {
-          return const Center(
-            child: Text('An error has occurred!'),
-          );
-        } else if (snapshot.hasData) {
-          var classDict = {};
+class getClasses extends StatelessWidget {
+  final String subject;
+  final String semester;
+  const getClasses({super.key, required this.subject, required this.semester});
 
-          for (var i = 0; i < snapshot.data!.length; i++) {
-            var faculty = "Section " +
-                snapshot.data![i].section +
-                " - " +
-                snapshot.data![i].facultyFirstName +
-                " " +
-                snapshot.data![i].facultyLastName +
-                " - CRN:" +
-                snapshot.data![i].crn +
-                "\n" +
-                fullHour(snapshot.data![i].start.toString()) +
-                " to " +
-                fullHour(snapshot.data![i].end.toString()) +
-                " - " +
-                fullDays(snapshot.data![i].days) +
-                "\n" +
-                snapshot.data![i].campus +
-                "\n";
+  @override
+  Widget build(BuildContext context) {
+    var subject;
+    return Container(
+      child: FutureBuilder<List<CourseData>>(
+        future: fetchCourseData(http.Client(), this.subject, this.semester),
+        builder: (context, snapshot) {
+          print(snapshot);
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text('An error has occurred!'),
+            );
+          } else if (snapshot.hasData) {
+            var classDict = {};
 
-            var combined = snapshot.data![i].subject +
-                " " +
-                snapshot.data![i].number +
-                " - " +
-                snapshot.data![i].title +
-                "\nCredit Hours: " +
-                snapshot.data![i].creditHours.toString();
-            classDict.putIfAbsent(combined, () => []);
-            var finList = classDict[combined];
-            finList.add(faculty);
-            classDict[combined] = finList;
+            for (var i = 0; i < snapshot.data!.length; i++) {
+              var faculty = "Section " +
+                  snapshot.data![i].section +
+                  " - " +
+                  snapshot.data![i].facultyFirstName +
+                  " " +
+                  snapshot.data![i].facultyLastName +
+                  " - CRN:" +
+                  snapshot.data![i].crn +
+                  "\n" +
+                  fullHour(snapshot.data![i].start.toString()) +
+                  " to " +
+                  fullHour(snapshot.data![i].end.toString()) +
+                  " - " +
+                  fullDays(snapshot.data![i].days) +
+                  "\n" +
+                  snapshot.data![i].campus +
+                  "\n";
+
+              var combined = snapshot.data![i].subject +
+                  " " +
+                  snapshot.data![i].number +
+                  " - " +
+                  snapshot.data![i].title +
+                  "\nCredit Hours: " +
+                  snapshot.data![i].creditHours.toString();
+              classDict.putIfAbsent(combined, () => []);
+              var finList = classDict[combined];
+              finList.add(faculty);
+              classDict[combined] = finList;
+            }
+
+            return CourseList(photos: classDict);
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
-
-          return CourseList(photos: classDict);
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    ),
-  );
-}
-
-//Classes page, shows the relevant classes.
-class Classes extends StatelessWidget {
-  String subject;
-
-  Classes({super.key, required this.subject});
-
-  @override
-  Widget build(BuildContext context) {
-    return getClasses("MATE");
-  }
-}
-
-Widget _buildExpandableTile(key, value) {
-  return ExpansionTile(
-    title: Text(
-      key,
-    ),
-    children: <Widget>[
-      ListTile(
-        title: Text(
-          value,
-          style: TextStyle(fontWeight: FontWeight.w700),
-        ),
-      )
-    ],
-  );
-}
-
-class CourseList extends StatelessWidget {
-  const CourseList({super.key, required this.photos});
-
-  final Map photos;
-//ListView(padding: const EdgeInsets.all(8),
-
-  @override
-  Widget build(BuildContext context) {
-    var keysList = [];
-    var valuesList = [];
-    for (var element in photos.keys) {
-      keysList.add(element);
-      var finOut = "";
-      for (var j in photos[element]) {
-        finOut += j + "\n";
-      }
-      valuesList.add(finOut);
-    }
-    return CustomScrollView(slivers: <Widget>[
-      SliverToBoxAdapter(child: DropDown()),
-      SliverToBoxAdapter(
-          child: Container(
-              child: ListView.separated(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        padding: const EdgeInsets.all(8),
-        itemCount: photos.keys.length,
-        itemBuilder: (BuildContext context, int index) {
-          return _buildExpandableTile(keysList[index], valuesList[index]);
         },
-        separatorBuilder: (BuildContext context, int index) => const Divider(),
-      )))
-    ]);
+      ),
+    );
   }
 }
 
-class DropDown extends StatefulWidget {
-  const DropDown({Key? key}) : super(key: key);
+class Classes extends StatefulWidget {
+  const Classes({super.key});
 
   @override
-  _DropDownState createState() => _DropDownState();
+  State<Classes> createState() => _ClassesState();
 }
 
-class _DropDownState extends State<DropDown> {
+class _ClassesState extends State<Classes> {
+  @override
   // Initial Selected Value
   String dropdownvalue = 'ACCT';
+  String semestervalue = "202310";
 
   // List of items in our dropdown menu
   var items = [
@@ -372,36 +333,131 @@ class _DropDownState extends State<DropDown> {
     'UTCH',
     'WRLS'
   ];
+
+  var items2 = [
+    "201810",
+    "201820",
+    "201830",
+    "201910",
+    "201920",
+    "201930",
+    "202010",
+    "202020",
+    "202030",
+    "202110",
+    "202120",
+    "202130",
+    "202210",
+    "202220",
+    "202230",
+    "202310",
+    "202320",
+  ];
+  Widget build(BuildContext context) {
+    return CustomScrollView(slivers: <Widget>[
+      SliverToBoxAdapter(
+          child: Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+            Container(
+                child: Center(
+                    child: DropdownButton(
+              value: dropdownvalue,
+              icon: const Icon(Icons.keyboard_arrow_down),
+              items: items.map((String items) {
+                return DropdownMenuItem(
+                  value: items,
+                  child: Text(items),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  dropdownvalue = newValue!;
+                });
+              },
+            )))
+          ]))),
+      SliverToBoxAdapter(
+          child: Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+            Container(
+                child: Center(
+                    child: DropdownButton(
+              value: semestervalue,
+              icon: const Icon(Icons.keyboard_arrow_down),
+              items: items2.map((String items2) {
+                return DropdownMenuItem(
+                  value: items2,
+                  child: Text(decodeSemesterCode(items2)),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  semestervalue = newValue!;
+                });
+              },
+            )))
+          ]))),
+      SliverToBoxAdapter(
+          child: Card(
+        child: Text(decodeSemesterCode(semestervalue)),
+      )),
+      SliverToBoxAdapter(
+          child: getClasses(
+              key: UniqueKey(),
+              subject: dropdownvalue,
+              semester: semestervalue)),
+    ]);
+  }
+}
+
+Widget _buildExpandableTile(key, value) {
+  return ExpansionTile(
+    title: Text(
+      key,
+    ),
+    children: <Widget>[
+      ListTile(
+        title: Text(
+          value,
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+      )
+    ],
+  );
+}
+
+class CourseList extends StatelessWidget {
+  const CourseList({super.key, required this.photos});
+
+  final Map photos;
+//ListView(padding: const EdgeInsets.all(8),
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Container(
-          width: double.infinity,
-          child: Center(
-              child: DropdownButton(
-            // Initial Value
-            value: dropdownvalue,
-
-            // Down Arrow Icon
-            icon: const Icon(Icons.keyboard_arrow_down),
-
-            // Array list of items
-            items: items.map((String items) {
-              return DropdownMenuItem(
-                value: items,
-                child: Text(items),
-              );
-            }).toList(),
-            // After selecting the desired option,it will
-            // change button value to selected value
-            onChanged: (String? newValue) {
-              setState(() {
-                dropdownvalue = newValue!;
-                getClasses(newValue);
-              });
-            },
-          )))
-    ]));
+    var keysList = [];
+    var valuesList = [];
+    for (var element in photos.keys) {
+      keysList.add(element);
+      var finOut = "";
+      for (var j in photos[element]) {
+        finOut += j + "\n";
+      }
+      valuesList.add(finOut);
+    }
+    return Container(
+        child: ListView.separated(
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      padding: const EdgeInsets.all(8),
+      itemCount: photos.keys.length,
+      itemBuilder: (BuildContext context, int index) {
+        return _buildExpandableTile(keysList[index], valuesList[index]);
+      },
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
+    ));
   }
 }

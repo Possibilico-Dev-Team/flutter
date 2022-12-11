@@ -18,7 +18,7 @@ class HomePageState extends State<HomePage> {
 
   var pages = [
     const Index(),
-    Classes(subject: "ACCT"),
+    Classes(),
     Schedule(),
     DegreeTree(),
   ];

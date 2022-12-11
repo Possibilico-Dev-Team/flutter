@@ -1,6 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:possibilico/models/possibilico_user.dart';
+
+Map IconGet = {};
+
+Map finishedCourses = {
+  '201910': [
+    'CSCI 1380',
+    'ECON 1301',
+    'ELEE 1101',
+    'HONR 2387',
+    'MATH 1314',
+    'PHIL 2326'
+  ],
+  '201920': ['ELEE 2130', 'HONR 2388', 'MATH 2412', 'POLS 2305', 'THTF 2366'],
+  '202010': [
+    'CSCI 1101',
+    'CSCI 1170',
+    'CSCI 1370',
+    'ELEE 2330',
+    'HIST 1302',
+    'POLS 2306'
+  ],
+  '202020': ['CHEM 1309', 'CSCI 2380', 'MARK 3300', 'MATH 2413'],
+  '202040': ['CSCI 3326'],
+  '202110': ['MATH 2346', 'PHYS 2425'],
+  '202120': ['COMM 1315', 'CSCI 2333', 'CSCI 2344', 'CSCI 3340'],
+  '202140': ['CSCI 3310'],
+  '202240': ['CSCI 4345'],
+  '202210': ['ARTS 4336', 'CSCI 3336', 'MATH 2318', 'MATH 2414'],
+  '202220': ['CSCI 3333', 'CSCI 3342', 'CSCI 4335', 'ENGL 3342', 'STAT 3301']
+};
+
+final ScrollController myScrollWorks = ScrollController();
 
 /// The base class for the different types of items the list can contain.
 abstract class ListItem {
@@ -116,39 +151,71 @@ Widget Header() {
       ])));
 }
 
-final ScrollController myScrollWorks = ScrollController();
+SliverToBoxAdapter cardSliver(input) {
+  return SliverToBoxAdapter(
+      child: Card(
+    child: Text(decodeSemesterCode(input)),
+  ));
+}
+
+SliverToBoxAdapter classCard(input) {
+  return (SliverToBoxAdapter(
+      child: Card(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        ListTile(
+          leading: Icon(Icons.computer),
+          title: Text(input),
+          subtitle: Text(''),
+        ),
+      ],
+    ),
+  )));
+}
+
+String decodeSemesterCode(String input) {
+  if (input.length > 6) {
+    return input;
+  } else {
+    String year = input.substring(0, 4);
+    String sem = input.substring(4);
+    switch (sem) {
+      case "10":
+        year = (int.parse(year) - 1).toString();
+        return "Fall " + year;
+      case "20":
+        return "Spring " + year;
+      case "30":
+        return "Summer I " + year;
+      case "40":
+        return "Summer II " + year;
+      default:
+        break;
+    }
+    return input;
+  }
+}
 
 class Index extends StatelessWidget {
   const Index({super.key});
 
   @override
   Widget build(BuildContext context) {
+    var sliverCardList = <Widget>[];
+    sliverCardList.add(SliverToBoxAdapter(child: Container(child: Header())));
+    for (var prop in finishedCourses.keys) {
+      sliverCardList.add(cardSliver(prop));
+
+      for (var prop2 in finishedCourses[prop]) {
+        sliverCardList.add(classCard(prop2));
+      }
+      ;
+    }
     return (PrimaryScrollController(
         controller: myScrollWorks,
         child: CustomScrollView(
-          slivers: <Widget>[
-            SliverToBoxAdapter(child: Container(child: Header())),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  return Center(
-                    child: Card(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          const ListTile(
-                            leading: Icon(Icons.computer),
-                            title: Text("CSCI 1102"),
-                            subtitle: Text('Introduction to Computer Science.'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
+          slivers: sliverCardList,
         )));
   }
 }
