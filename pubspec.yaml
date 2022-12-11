@@ -43,6 +43,7 @@ dependencies:
   cloud_firestore: ^4.1.0
   time_planner: ^0.1.1
   graphview: ^1.1.1
+  graphite: ^0.3.0
 
 dev_dependencies:
   flutter_test:

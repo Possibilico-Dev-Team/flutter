@@ -26,10 +26,13 @@ class _SignUpState extends State<SignUp> {
         title: const Text('Sign Up'),
       ),
       body: Container(
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 206, 255, 247),
+        ),
         padding: const EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
         child: Column(
           children: [
-            const Spacer(),
+            Expanded(child: Image.asset("Logo.png")),
             TextField(
               decoration: const InputDecoration(
                 hintText: 'Email',

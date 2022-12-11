@@ -18,9 +18,9 @@ class HomePageState extends State<HomePage> {
 
   var pages = [
     const Index(),
-    const Classes(),
+    Classes(),
     Schedule(),
-    const DegreeTree(),
+    DegreeTree(),
   ];
   void onItemTapped(int index) {
     setState(() {
