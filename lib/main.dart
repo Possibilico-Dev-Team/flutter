@@ -23,10 +23,6 @@ import 'firebase_options.dart';
   | |   / _ \ |______| / _` | / _ \    
   | |  | (_) |        | (_| || (_) | _ 
   \_/   \___/          \__,_| \___/ (_)
-(As of 12/2/2022)
-- Flesh out Course and Calendar Areas, home/courses.dart & home/calendar.dart
-- Move profile to navbar, home/profile.dart
-- Add Sign Up process to app
 */
 
 /*
