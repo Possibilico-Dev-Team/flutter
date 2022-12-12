@@ -45,6 +45,7 @@ class _SignInState extends State<SignIn> {
             ),
             const Padding(padding: EdgeInsets.only(top: 50.0)),
             const Text('Password'),
+            const Text('Password'),
             TextField(
               obscureText: true,
               decoration: InputDecoration(

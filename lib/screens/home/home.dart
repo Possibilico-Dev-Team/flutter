@@ -3,6 +3,7 @@ import 'package:possibilico/screens/home/index.dart';
 import 'package:possibilico/screens/home/degree_tree.dart';
 import 'package:possibilico/screens/home/schedule.dart';
 import 'package:possibilico/screens/home/course_list.dart';
+import 'package:possibilico/screens/home/graph_data.dart';
 import 'package:possibilico/services/auth.dart';
 
 //Home Page with Selector for Index, Classes or Schedule
@@ -21,6 +22,7 @@ class HomePageState extends State<HomePage> {
     Classes(),
     Schedule(),
     DegreeTree(),
+    GraphData(),
   ];
   void onItemTapped(int index) {
     setState(() {
@@ -66,6 +68,10 @@ class HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.account_tree),
             label: 'Progress',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.pie_chart),
+            label: 'Data',
           ),
         ],
         currentIndex: pageIndex,

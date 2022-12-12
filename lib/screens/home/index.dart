@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:possibilico/screens/home/sharedData&Fun.dart';
+import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 
 Map finishedCourses = {
   '201910': [
@@ -123,14 +124,14 @@ Widget Header() {
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
-                  fit: BoxFit.fill,
                   image: NetworkImage(
-                      'https://scontent.fftw1-1.fna.fbcdn.net/v/t39.30808-6/311835908_5983056418373420_1779428621412515513_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=pyDb_zw3JsEAX-nFRNI&_nc_ht=scontent.fftw1-1.fna&oh=00_AfBc0mFHUMHRBuMGWvh4VyR6YbDoNJD-Hy1vWrtfGYBjNQ&oe=63985B24')),
+                      'https://as2.ftcdn.net/v2/jpg/00/64/67/63/1000_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg'),
+                  fit: BoxFit.fill),
             ),
           ),
           Container(
               padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-              child: const Text("Miguel Ramirez", style: headerStyle)),
+              child: Text("Juan Smith", style: headerStyle)),
         ]),
         Container(
           padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
@@ -143,6 +144,23 @@ Widget Header() {
                   style: TextStyle(color: Colors.white))),
         )
       ])));
+}
+
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+      body: Center(
+          child: Container(
+              child: SfSparkLineChart(
+    //Enable the trackball
+    trackball:
+        SparkChartTrackball(activationMode: SparkChartActivationMode.tap),
+    //Enable marker
+    marker: SparkChartMarker(displayMode: SparkChartMarkerDisplayMode.all),
+    //Enable data label
+    labelDisplayMode: SparkChartLabelDisplayMode.all,
+    data: <double>[1, 5, -6, 0, 1, -2, 7, -7, -4, -10, 13, -6, 7, 5, 11, 5, 3],
+  ))));
 }
 
 SliverToBoxAdapter cardSliver(input) {
@@ -161,7 +179,7 @@ SliverToBoxAdapter classCard(input) {
         ListTile(
           leading: getRelevantIcon(input.substring(0, 4)),
           title: Text(input),
-          subtitle: const Text(''),
+          subtitle: Text(''),
         ),
       ],
     ),
