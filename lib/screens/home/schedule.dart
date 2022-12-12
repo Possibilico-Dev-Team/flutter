@@ -21,41 +21,81 @@ class _ScheduleState extends State<Schedule> {
       Colors.cyan
     ];
 
-    setState(() {
-      tasks.add(
-        TimePlannerTask(
-          onTap: () {},
-          child: Text(
-            'CSCI',
-            style: TextStyle(color: Colors.grey[350], fontSize: 12),
-          ),
-          color: colors[Random().nextInt(colors.length)],
-          dateTime: TimePlannerDateTime(
-              day: Random().nextInt(10),
-              hour: Random().nextInt(14) + 6,
-              minutes: Random().nextInt(60)),
-          minutesDuration: Random().nextInt(90) + 30,
-          daysDuration: Random().nextInt(4) + 1,
-        ),
-      );
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Random task added to time planner!')));
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    for (var i = 0; i < 6; i++) {
+    var taskInput = [
+      {
+        'day': 1,
+        'hour': 15,
+        'minutes': 30,
+        'text': "Top CSCI: Robotics Programming"
+      },
+      {'day': 1, 'hour': 17, 'minutes': 0, 'text': "Senior Project"},
+      {
+        'day': 2,
+        'hour': 9,
+        'minutes': 30,
+        'text': "Top CSCI: Technical Interview"
+      },
+      {
+        'day': 2,
+        'hour': 11,
+        'minutes': 00,
+        'text': "Automata Formal Lang and Comp"
+      },
+      {
+        'day': 2,
+        'hour': 14,
+        'minutes': 00,
+        'text': "Algorithms and Data Structures"
+      },
+      {
+        'day': 3,
+        'hour': 15,
+        'minutes': 30,
+        'text': "Top CSCI: Robotics Programming"
+      },
+      {'day': 3, 'hour': 17, 'minutes': 0, 'text': "Senior Project"},
+      {
+        'day': 4,
+        'hour': 9,
+        'minutes': 30,
+        'text': "Top CSCI: Technical Interview"
+      },
+      {
+        'day': 4,
+        'hour': 11,
+        'minutes': 00,
+        'text': "Automata Formal Lang and Comp"
+      },
+      {
+        'day': 4,
+        'hour': 14,
+        'minutes': 00,
+        'text': "Algorithms and Data Structures"
+      },
+    ];
+
+    for (var i in taskInput) {
       tasks.add(TimePlannerTask(
+        onTap: () {},
         color: Colors.orange,
         dateTime: TimePlannerDateTime(
-            day: Random().nextInt(10),
-            hour: Random().nextInt(14) + 6,
-            minutes: Random().nextInt(60)),
+            day: int.parse(i['day'].toString()),
+            hour: int.parse(i['hour'].toString()),
+            minutes: int.parse(i['minutes'].toString())),
         minutesDuration: 45,
+        daysDuration: 1,
+        child: Text(
+          (i['text'].toString()),
+          style: TextStyle(color: Colors.white, fontSize: 12),
+        ),
       ));
     }
+
     return Scaffold(
         body: TimePlanner(
             startHour: 6,
@@ -91,6 +131,7 @@ class _ScheduleState extends State<Schedule> {
               ),
             ],
             tasks: tasks,
+            currentTimeAnimation: false,
             style: TimePlannerStyle(showScrollBar: false)));
   }
 }

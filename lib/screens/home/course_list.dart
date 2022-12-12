@@ -163,20 +163,68 @@ class getCourseRecs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
-        child: ExpansionTile(
-      leading: getRelevantIcon("CSCI"),
-      title: Text(
-        "CSCI 3333",
+        child: ListView(shrinkWrap: true, children: [
+      ExpansionTile(
+        leading: getRelevantIcon("CSCI"),
+        title: Text(
+          "CSCI 1370",
+        ),
+        children: <Widget>[
+          ListTile(
+            title: Text(
+              "Unlocks Courses:" +
+                  "\n" +
+                  "CSCI 2333" +
+                  "\n" +
+                  "CSCI 2344" +
+                  "\n" +
+                  "CSCI 2380" +
+                  "\n" +
+                  "CSCI 3310" +
+                  "\n" +
+                  "CSCI 3326",
+              style: TextStyle(),
+            ),
+          )
+        ],
       ),
-      children: <Widget>[
-        ListTile(
-          title: Text(
-            "Unlocks Courses:",
-            style: TextStyle(),
-          ),
-        )
-      ],
-    ));
+      ExpansionTile(
+        leading: getRelevantIcon("CSCI"),
+        title: Text(
+          "CSCI 2380",
+        ),
+        children: <Widget>[
+          ListTile(
+            title: Text(
+              "Unlocks Courses:" +
+                  "\n" +
+                  "CSCI 3333" +
+                  "\n" +
+                  "CSCI 3336" +
+                  "\n" +
+                  "CSCI 3340" +
+                  "\n" +
+                  "CSCI 4335",
+              style: TextStyle(),
+            ),
+          )
+        ],
+      ),
+      ExpansionTile(
+        leading: getRelevantIcon("CSCI"),
+        title: Text(
+          "CSCI 3333",
+        ),
+        children: <Widget>[
+          ListTile(
+            title: Text(
+              "Unlocks Courses:" + "\n" + "CSCI 4333" + "\n" + "CSCI 4325",
+              style: TextStyle(),
+            ),
+          )
+        ],
+      ),
+    ]));
   }
 }
 
@@ -402,7 +450,7 @@ class _ClassesState extends State<Classes> {
     return CustomScrollView(slivers: <Widget>[
       SliverToBoxAdapter(
           child: Card(
-        child: Text("My Recommended Courses"),
+        child: Text("Computer Science Recommended"),
       )),
       getCourseRecs(semester: int.parse(semestervalue)),
       SliverToBoxAdapter(
