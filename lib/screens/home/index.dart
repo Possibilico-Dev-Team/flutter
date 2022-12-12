@@ -1,6 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:possibilico/screens/home/sharedData&Fun.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_charts/sparkcharts.dart';
+
+Map finishedCourses = {
+  '201910': [
+    'CSCI 1380',
+    'ECON 1301',
+    'ELEE 1101',
+    'HONR 2387',
+    'MATH 1314',
+    'PHIL 2326'
+  ],
+  '201920': ['ELEE 2130', 'HONR 2388', 'MATH 2412', 'POLS 2305', 'THTF 2366'],
+  '202010': [
+    'CSCI 1101',
+    'CSCI 1170',
+    'CSCI 1370',
+    'ELEE 2330',
+    'HIST 1302',
+    'POLS 2306'
+  ],
+  '202020': ['CHEM 1309', 'CSCI 2380', 'MARK 3300', 'MATH 2413'],
+  '202040': ['CSCI 3326'],
+  '202110': ['MATH 2346', 'PHYS 2425'],
+  '202120': ['COMM 1315', 'CSCI 2333', 'CSCI 2344', 'CSCI 3340'],
+  '202140': ['CSCI 3310'],
+  '202240': ['CSCI 4345'],
+  '202210': ['ARTS 4336', 'CSCI 3336', 'MATH 2318', 'MATH 2414'],
+  '202220': ['CSCI 3333', 'CSCI 3342', 'CSCI 4335', 'ENGL 3342', 'STAT 3301']
+};
+
+final ScrollController myScrollWorks = ScrollController();
 
 /// The base class for the different types of items the list can contain.
 abstract class ListItem {
@@ -95,13 +126,13 @@ Widget Header() {
               shape: BoxShape.circle,
               image: DecorationImage(
                   image: NetworkImage(
-                      'https://nntheblog2.b-cdn.net/wp-content/uploads/2022/02/Pochita-chainsaw-man-8.jpg'),
+                      'https://scontent.fftw1-1.fna.fbcdn.net/v/t39.30808-6/311835908_5983056418373420_1779428621412515513_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=pyDb_zw3JsEAX-nFRNI&_nc_ht=scontent.fftw1-1.fna&oh=00_AfBc0mFHUMHRBuMGWvh4VyR6YbDoNJD-Hy1vWrtfGYBjNQ&oe=63985B24'),
                   fit: BoxFit.fill),
             ),
           ),
           Container(
               padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-              child: Text("First Last", style: headerStyle)),
+              child: Text("Miguel Ramirez", style: headerStyle)),
         ]),
         Container(
           padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
@@ -116,35 +147,88 @@ Widget Header() {
       ])));
 }
 
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+      body: Center(
+          child: Container(
+              child: SfSparkLineChart(
+    //Enable the trackball
+    trackball:
+        SparkChartTrackball(activationMode: SparkChartActivationMode.tap),
+    //Enable marker
+    marker: SparkChartMarker(displayMode: SparkChartMarkerDisplayMode.all),
+    //Enable data label
+    labelDisplayMode: SparkChartLabelDisplayMode.all,
+    data: <double>[1, 5, -6, 0, 1, -2, 7, -7, -4, -10, 13, -6, 7, 5, 11, 5, 3],
+  ))));
+}
+
+SliverToBoxAdapter cardSliver(input) {
+  return SliverToBoxAdapter(
+      child: Card(
+    child: Text(decodeSemesterCode(input)),
+  ));
+}
+
+SliverToBoxAdapter classCard(input) {
+  return (SliverToBoxAdapter(
+      child: Card(
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        ListTile(
+          leading: getRelevantIcon(input.substring(0, 4)),
+          title: Text(input),
+          subtitle: Text(''),
+        ),
+      ],
+    ),
+  )));
+}
+
+String decodeSemesterCode(String input) {
+  if (input.length > 6) {
+    return input;
+  } else {
+    String year = input.substring(0, 4);
+    String sem = input.substring(4);
+    switch (sem) {
+      case "10":
+        year = (int.parse(year) - 1).toString();
+        return "Fall " + year;
+      case "20":
+        return "Spring " + year;
+      case "30":
+        return "Summer I " + year;
+      case "40":
+        return "Summer II " + year;
+      default:
+        break;
+    }
+    return input;
+  }
+}
+
 class Index extends StatelessWidget {
   const Index({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return (CustomScrollView(
-      slivers: <Widget>[
-        SliverToBoxAdapter(child: Container(child: Header())),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) {
-              return Center(
-                child: Card(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      const ListTile(
-                        leading: Icon(Icons.computer),
-                        title: Text("CSCI 1102"),
-                        subtitle: Text('Introduction to Computer Science.'),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    ));
+    var sliverCardList = <Widget>[];
+    sliverCardList.add(SliverToBoxAdapter(child: Container(child: Header())));
+    for (var prop in finishedCourses.keys) {
+      sliverCardList.add(cardSliver(prop));
+
+      for (var prop2 in finishedCourses[prop]) {
+        sliverCardList.add(classCard(prop2));
+      }
+      ;
+    }
+    return (PrimaryScrollController(
+        controller: myScrollWorks,
+        child: CustomScrollView(
+          slivers: sliverCardList,
+        )));
   }
 }

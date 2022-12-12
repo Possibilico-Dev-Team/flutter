@@ -24,6 +24,11 @@ class _ScheduleState extends State<Schedule> {
     setState(() {
       tasks.add(
         TimePlannerTask(
+          onTap: () {},
+          child: Text(
+            'CSCI',
+            style: TextStyle(color: Colors.grey[350], fontSize: 12),
+          ),
           color: colors[Random().nextInt(colors.length)],
           dateTime: TimePlannerDateTime(
               day: Random().nextInt(10),
@@ -31,14 +36,6 @@ class _ScheduleState extends State<Schedule> {
               minutes: Random().nextInt(60)),
           minutesDuration: Random().nextInt(90) + 30,
           daysDuration: Random().nextInt(4) + 1,
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('You click on time planner object')));
-          },
-          child: Text(
-            'this is a demo',
-            style: TextStyle(color: Colors.grey[350], fontSize: 12),
-          ),
         ),
       );
     });
@@ -49,61 +46,51 @@ class _ScheduleState extends State<Schedule> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: TimePlanner(
-            startHour: 2,
-            endHour: 24,
+    for (var i = 0; i < 6; i++) {
+      tasks.add(TimePlannerTask(
+        color: Colors.orange,
+        dateTime: TimePlannerDateTime(
+            day: Random().nextInt(10),
+            hour: Random().nextInt(14) + 6,
+            minutes: Random().nextInt(60)),
+        minutesDuration: 45,
+      ));
+    }
+    return Scaffold(
+        body: TimePlanner(
+            startHour: 6,
+            endHour: 20,
             headers: [
               TimePlannerTitle(
-                date: "7/20/2021",
-                title: "tuesday",
+                date: "",
+                title: "Monday",
               ),
               TimePlannerTitle(
-                date: "7/21/2021",
-                title: "wednesday",
+                date: "",
+                title: "Tuesday",
               ),
               TimePlannerTitle(
-                date: "7/22/2021",
-                title: "thursday",
+                date: "",
+                title: "Wednesday",
               ),
               TimePlannerTitle(
-                date: "7/23/2021",
-                title: "friday",
+                date: "",
+                title: "Thursday",
               ),
               TimePlannerTitle(
-                date: "7/24/2021",
-                title: "saturday",
+                date: "",
+                title: "Friday",
               ),
               TimePlannerTitle(
-                date: "7/25/2021",
-                title: "sunday",
-              ),
-              TimePlannerTitle(
-                date: "7/26/2021",
-                title: "monday",
-              ),
-              TimePlannerTitle(
-                date: "7/27/2021",
-                title: "tuesday",
-              ),
-              TimePlannerTitle(
-                date: "7/28/2021",
-                title: "wednesday",
-              ),
-              TimePlannerTitle(
-                date: "7/29/2021",
-                title: "thursday",
-              ),
-              TimePlannerTitle(
-                date: "7/30/2021",
-                title: "friday",
-              ),
-              TimePlannerTitle(
-                date: "7/31/2021",
+                date: "",
                 title: "Saturday",
+              ),
+              TimePlannerTitle(
+                date: "",
+                title: "Sunday",
               ),
             ],
             tasks: tasks,
-            style: TimePlannerStyle(showScrollBar: true)));
+            style: TimePlannerStyle(showScrollBar: false)));
   }
 }

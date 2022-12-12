@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:possibilico/models/possibilico_user.dart';
+import 'package:possibilico/screens/auth/signup/program_picker.dart';
 import 'package:possibilico/services/db.dart';
 import 'package:provider/provider.dart';
 
@@ -16,85 +17,86 @@ class _OnBoardState extends State<OnBoard> {
   List<DropdownMenuItem<String>>? majorList, minorList;
   TextEditingController fnController = TextEditingController(),
       lnController = TextEditingController();
+  List? programList;
+  String? major;
+  String? fNameError;
+  String? lNameError;
+  String? majorError;
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<PossibilicoUser?>(context);
-    List<DropdownMenuItem<String>> toDropdownItems(dynamic dataList) {
-      return dataList
-          .map<DropdownMenuItem<String>>(((Map<String, dynamic> item) {
-        return DropdownMenuItem<String>(
-          value: item['name'],
-          child: Text(item['value']),
-        );
-      })).toList();
-    }
 
     return FutureBuilder(
-        future: Future.wait(
-            [database.getCollection('major'), database.getCollection('minor')]),
+        future: database.getDoc('data', 'programs'),
         builder: (context, snapshot) {
-          String errorText = '';
-
           if (snapshot.hasData) {
             dynamic data = snapshot.data;
             // Validate data
-            if (data[0] is List<Map<String, dynamic>>) {
-              majorList = toDropdownItems(data[0]);
-              minorList = toDropdownItems(data[1]);
+            if (data is Map<String, dynamic>) {
+              programList = (data['array'] as List).toSet().toList();
 
               // return onboarding scaffold
               return Scaffold(
                 backgroundColor: Colors.white,
-                appBar: AppBar(
-                  backgroundColor: Colors.purple[800],
-                  elevation: 0.0,
-                  title: const Text('User Information'),
-                ),
                 body: Container(
                   padding: const EdgeInsets.symmetric(
                       vertical: 50.0, horizontal: 20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      const Text(
+                        'User Information',
+                        style: TextStyle(
+                            fontSize: 28.0, fontWeight: FontWeight.bold),
+                      ),
+                      const Padding(padding: EdgeInsets.only(top: 30.0)),
                       const Text('First Name'),
                       TextField(
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: 'John',
+                          errorText: fNameError,
                         ),
                         controller: fnController,
                       ),
                       const Padding(padding: EdgeInsets.only(top: 30)),
                       const Text('Last Name'),
                       TextField(
-                        decoration: const InputDecoration(
+                        autofocus: true,
+                        decoration: InputDecoration(
                           hintText: 'Doe',
+                          errorText: lNameError,
                         ),
                         controller: lnController,
                       ),
-                      const Padding(padding: EdgeInsets.only(top: 20.0)),
-                      Row(
-                        children: [
-                          const Spacer(),
-                          DropdownButton<String>(
-                            hint: const Text('Pick a Major'),
-                            value: majorValue,
-                            onChanged: (String? value) => setState(() {
-                              majorValue = value;
-                            }),
-                            items: majorList,
+                      const Padding(padding: EdgeInsets.only(top: 30)),
+                      const Text('Degree Program'),
+                      TextButton(
+                        style:
+                            const ButtonStyle(alignment: Alignment.centerLeft),
+                        onPressed: () {
+                          _navigateAndDisplaySelection(context);
+                        },
+                        child: DropdownButton(
+                          isExpanded: true,
+                          style: const TextStyle(
+                            overflow: TextOverflow.visible,
                           ),
-                          const Spacer(),
-                          DropdownButton<String>(
-                            hint: const Text('Pick a Minor'),
-                            value: minorValue,
-                            onChanged: (String? value) => setState(() {
-                              minorValue = value;
-                            }),
-                            items: minorList,
-                          ),
-                          const Spacer(),
-                        ],
+                          hint: const Text('Choose a Major'),
+                          items: major != null
+                              ? [
+                                  DropdownMenuItem(
+                                      value: major,
+                                      child: Text(major as String))
+                                ]
+                              : null,
+                          value: major,
+                          onChanged: null,
+                        ),
+                      ),
+                      Text(
+                        majorError != null ? majorError as String : '',
+                        style: TextStyle(color: Colors.red, fontSize: 10),
                       ),
                       const Spacer(),
                       ElevatedButton(
@@ -102,14 +104,25 @@ class _OnBoardState extends State<OnBoard> {
                             backgroundColor: Colors.purple[800]),
                         child: const Text('Finish'),
                         onPressed: () async {
-                          Map<String, dynamic> newData = {
-                            'first name': fnController.text,
-                            'last name': lnController.text,
-                            'major': majorValue,
-                            'minor': minorValue
-                          };
-                          database.addDoc(
-                              'user', user?.id() as String, newData);
+                          if (fnController.text != '' &&
+                              lnController.text != '' &&
+                              major is String &&
+                              major != '') {
+                            Map<String, dynamic> newData = {
+                              'firstName': fnController.text,
+                              'lastName': lnController.text,
+                              'degreeProgram': major
+                            };
+                            database.addDoc(
+                                'user', user?.id() as String, newData);
+                          } else {
+                            print('error detected in onboard');
+                            setState(() {
+                              print('error detected in onboard setstate');
+                              lNameError =
+                                  'First Name, Last Name, or major is empty';
+                            });
+                          }
                         },
                       ),
                     ],
@@ -118,31 +131,37 @@ class _OnBoardState extends State<OnBoard> {
               );
             } else {
               // Save firestore query error
-              errorText =
-                  'Error: ${data is String ? data : 'Firestore query returned \'$data\''}';
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Error'),
+                ),
+                body: Column(
+                  children: [
+                    const Spacer(),
+                    Text(
+                        'Error: ${data is String ? data : 'Firestore query returned \'$data\''}'),
+                    const Spacer(),
+                  ],
+                ),
+              );
             }
           } else {
-            // No data was returned from future, save error string
-            errorText = 'Error: No data returned from future';
+            return const Center(
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.white,
+              ),
+            );
           }
-
-          // return view with error
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Error'),
-            ),
-            body: Column(
-              children: [
-                const Spacer(),
-                Text(errorText),
-                const Spacer(),
-              ],
-            ),
-          );
         });
   }
-}
 
-class onBoardingScaffold extends Scaffold {
-  const onBoardingScaffold({super.body});
+  _navigateAndDisplaySelection(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProgramPicker(programList)),
+    );
+    setState(() {
+      major = result;
+    });
+  }
 }

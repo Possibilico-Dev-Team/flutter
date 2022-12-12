@@ -15,53 +15,76 @@ class _SignInState extends State<SignIn> {
   final AuthService _auth = AuthService();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  String? emailError;
   String? passwordError;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        elevation: 0.0,
-        title: const Text('Sign In'),
-      ),
       body: Container(
-        padding: const EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(vertical: 50.0, horizontal: 50.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Spacer(),
+            const Text(
+              'Login',
+              style: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
+            ),
+            const Padding(padding: EdgeInsets.only(top: 50.0)),
+            const Expanded(
+                child: Image(image: AssetImage('PossibilicoLogo.png'))),
+            const Text('Email'),
             TextField(
-              decoration: const InputDecoration(
-                hintText: 'Email',
+              decoration: InputDecoration(
+                hintText: 'example@utrgv.edu',
+                errorText: emailError,
               ),
               controller: emailController,
             ),
             const Padding(padding: EdgeInsets.only(top: 50.0)),
+            const Text('Password'),
             TextField(
               obscureText: true,
               decoration: InputDecoration(
-                hintText: 'Password',
+                hintText: 'ABCD1234!',
                 errorText: passwordError,
               ),
               controller: passwordController,
             ),
-            const Padding(padding: EdgeInsets.only(top: 50.0)),
+            const Spacer(
+              flex: 2,
+            ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(50.0)),
               child: const Text('Sign In'),
               onPressed: () async {
-                dynamic result = await _auth.signInWithEmail(
-                    emailController.text, passwordController.text);
-                if (result is String) {
+                if (emailController.text.isEmpty) {
                   setState(() {
-                    passwordError = result;
+                    emailError = 'Email cannot be blank';
                   });
-                } else if (result is User) {
-                  print('Sign in: $result');
-                } else {
+                }
+                if (passwordController.text.isEmpty) {
                   setState(() {
-                    passwordError = result.toString();
+                    passwordError = 'Password cannot be blank';
                   });
+                }
+                if (emailController.text.isNotEmpty &&
+                    passwordController.text.isNotEmpty) {
+                  dynamic result = await _auth.signInWithEmail(
+                      emailController.text, passwordController.text);
+                  if (result is String) {
+                    setState(() {
+                      passwordError = result;
+                    });
+                  } else if (result is User) {
+                    print('Sign in: $result');
+                  } else {
+                    setState(() {
+                      passwordError = result.toString();
+                    });
+                  }
                 }
               },
             ),
@@ -75,9 +98,6 @@ class _SignInState extends State<SignIn> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => const SignUp()))
               },
-            ),
-            const Spacer(
-              flex: 2,
             ),
           ],
         ),
