@@ -24,6 +24,11 @@ class _ScheduleState extends State<Schedule> {
     setState(() {
       tasks.add(
         TimePlannerTask(
+          onTap: () {},
+          child: Text(
+            'CSCI',
+            style: TextStyle(color: Colors.grey[350], fontSize: 12),
+          ),
           color: colors[Random().nextInt(colors.length)],
           dateTime: TimePlannerDateTime(
               day: Random().nextInt(10),
@@ -31,14 +36,6 @@ class _ScheduleState extends State<Schedule> {
               minutes: Random().nextInt(60)),
           minutesDuration: Random().nextInt(90) + 30,
           daysDuration: Random().nextInt(4) + 1,
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('You click on time planner object')));
-          },
-          child: Text(
-            'CSCI',
-            style: TextStyle(color: Colors.grey[350], fontSize: 12),
-          ),
         ),
       );
     });
@@ -59,7 +56,6 @@ class _ScheduleState extends State<Schedule> {
         minutesDuration: 45,
       ));
     }
-    print(tasks);
     return Scaffold(
         body: TimePlanner(
             startHour: 6,
@@ -95,6 +91,6 @@ class _ScheduleState extends State<Schedule> {
               ),
             ],
             tasks: tasks,
-            style: TimePlannerStyle(showScrollBar: true)));
+            style: TimePlannerStyle(showScrollBar: false)));
   }
 }

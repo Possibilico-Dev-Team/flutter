@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:core';
+import 'package:possibilico/screens/home/sharedData&Fun.dart';
 
 String decodeSemesterCode(String input) {
   if (input.length > 6) {
@@ -78,6 +80,8 @@ class CourseData {
   final String crn;
   final int creditHours;
   final String campus;
+  final int taken;
+  final int available;
 
   const CourseData({
     required this.subject,
@@ -92,6 +96,8 @@ class CourseData {
     required this.crn,
     required this.creditHours,
     required this.campus,
+    required this.taken,
+    required this.available,
   });
 
   factory CourseData.fromJson(Map<String, dynamic> json) {
@@ -108,6 +114,8 @@ class CourseData {
       crn: json['classCrn'] as String,
       creditHours: json['creditHrs'] as int,
       campus: json['campDesc'] as String,
+      taken: json['seatsTaken'] as int,
+      available: json['seatsAvail'] as int,
     );
   }
 }
@@ -124,10 +132,14 @@ String fullHour(input) {
     hour -= 12;
     pastTwelve = true;
   }
+  String minString = minutes.toString();
+  if (minString == "0") {
+    minString = "00";
+  }
   if (pastTwelve == false) {
-    return hour.toString() + ":" + minutes.toString() + " AM";
+    return hour.toString() + ":" + minString + " AM";
   } else {
-    return hour.toString() + ":" + minutes.toString() + " PM";
+    return hour.toString() + ":" + minString + " PM";
   }
 }
 
@@ -144,6 +156,30 @@ String fullDays(input) {
   }
 }
 
+class getCourseRecs extends StatelessWidget {
+  final int semester;
+  const getCourseRecs({super.key, required this.semester});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+        child: ExpansionTile(
+      leading: getRelevantIcon("CSCI"),
+      title: Text(
+        "CSCI 3333",
+      ),
+      children: <Widget>[
+        ListTile(
+          title: Text(
+            "Unlocks Courses:",
+            style: TextStyle(),
+          ),
+        )
+      ],
+    ));
+  }
+}
+
 class getClasses extends StatelessWidget {
   final String subject;
   final String semester;
@@ -156,7 +192,6 @@ class getClasses extends StatelessWidget {
       child: FutureBuilder<List<CourseData>>(
         future: fetchCourseData(http.Client(), this.subject, this.semester),
         builder: (context, snapshot) {
-          print(snapshot);
           if (snapshot.hasError) {
             return const Center(
               child: Text('An error has occurred!'),
@@ -165,22 +200,31 @@ class getClasses extends StatelessWidget {
             var classDict = {};
 
             for (var i = 0; i < snapshot.data!.length; i++) {
-              var faculty = "Section " +
-                  snapshot.data![i].section +
+              var faculty;
+              faculty = "Section ";
+
+              faculty += snapshot.data![i].section +
                   " - " +
                   snapshot.data![i].facultyFirstName +
                   " " +
                   snapshot.data![i].facultyLastName +
                   " - CRN:" +
                   snapshot.data![i].crn +
-                  "\n" +
-                  fullHour(snapshot.data![i].start.toString()) +
-                  " to " +
-                  fullHour(snapshot.data![i].end.toString()) +
-                  " - " +
-                  fullDays(snapshot.data![i].days) +
-                  "\n" +
-                  snapshot.data![i].campus +
+                  "\n";
+              if (snapshot.data![i].days != "") {
+                faculty += fullHour(snapshot.data![i].start.toString()) +
+                    " to " +
+                    fullHour(snapshot.data![i].end.toString()) +
+                    " - " +
+                    fullDays(snapshot.data![i].days) +
+                    "\n";
+              }
+              faculty += snapshot.data![i].campus + "\n";
+              faculty += "Seats: " +
+                  snapshot.data![i].available.toString() +
+                  "/" +
+                  (snapshot.data![i].available + snapshot.data![i].taken)
+                      .toString() +
                   "\n";
 
               var combined = snapshot.data![i].subject +
@@ -353,8 +397,14 @@ class _ClassesState extends State<Classes> {
     "202310",
     "202320",
   ];
+
   Widget build(BuildContext context) {
     return CustomScrollView(slivers: <Widget>[
+      SliverToBoxAdapter(
+          child: Card(
+        child: Text("My Recommended Courses"),
+      )),
+      getCourseRecs(semester: int.parse(semestervalue)),
       SliverToBoxAdapter(
           child: Center(
               child: Column(
@@ -403,7 +453,7 @@ class _ClassesState extends State<Classes> {
           ]))),
       SliverToBoxAdapter(
           child: Card(
-        child: Text(decodeSemesterCode(semestervalue)),
+        child: Text(decodeSemesterCode(semestervalue) + " - Full Course List"),
       )),
       SliverToBoxAdapter(
           child: getClasses(
@@ -416,6 +466,7 @@ class _ClassesState extends State<Classes> {
 
 Widget _buildExpandableTile(key, value) {
   return ExpansionTile(
+    leading: getRelevantIcon(key.substring(0, 4)),
     title: Text(
       key,
     ),
@@ -423,7 +474,7 @@ Widget _buildExpandableTile(key, value) {
       ListTile(
         title: Text(
           value,
-          style: TextStyle(fontWeight: FontWeight.w700),
+          style: TextStyle(),
         ),
       )
     ],

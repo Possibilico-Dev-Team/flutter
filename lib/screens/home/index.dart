@@ -4,8 +4,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:possibilico/models/possibilico_user.dart';
-
-Map IconGet = {};
+import 'package:possibilico/screens/home/iconDict.dart';
 
 Map finishedCourses = {
   '201910': [
@@ -165,7 +164,7 @@ SliverToBoxAdapter classCard(input) {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         ListTile(
-          leading: Icon(Icons.computer),
+          leading: getRelevantIcon(input.substring(0, 4)),
           title: Text(input),
           subtitle: Text(''),
         ),
