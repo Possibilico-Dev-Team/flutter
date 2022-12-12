@@ -109,28 +109,28 @@ const headerStyle = TextStyle(
 
 Widget Header() {
   return (Container(
-      decoration: BoxDecoration(
-        image: const DecorationImage(
-          image: AssetImage('utrgv-blur.jpg'),
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/utrgv-blur.jpg'),
           fit: BoxFit.cover,
         ),
       ),
       child: Column(children: [
         Row(children: [
           Container(
-            width: 200,
             height: 200,
-            decoration: BoxDecoration(
+            width: 200,
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
+                  fit: BoxFit.fill,
                   image: NetworkImage(
-                      'https://scontent.fftw1-1.fna.fbcdn.net/v/t39.30808-6/311835908_5983056418373420_1779428621412515513_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=pyDb_zw3JsEAX-nFRNI&_nc_ht=scontent.fftw1-1.fna&oh=00_AfBc0mFHUMHRBuMGWvh4VyR6YbDoNJD-Hy1vWrtfGYBjNQ&oe=63985B24'),
-                  fit: BoxFit.fill),
+                      'https://scontent.fftw1-1.fna.fbcdn.net/v/t39.30808-6/311835908_5983056418373420_1779428621412515513_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=pyDb_zw3JsEAX-nFRNI&_nc_ht=scontent.fftw1-1.fna&oh=00_AfBc0mFHUMHRBuMGWvh4VyR6YbDoNJD-Hy1vWrtfGYBjNQ&oe=63985B24')),
             ),
           ),
           Container(
               padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-              child: Text("Miguel Ramirez", style: headerStyle)),
+              child: const Text("Miguel Ramirez", style: headerStyle)),
         ]),
         Container(
           padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
@@ -138,7 +138,7 @@ Widget Header() {
           color: Colors.black,
           child: Container(
               padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-              child: Text("Course Progression",
+              child: const Text("Course Progression",
                   textAlign: TextAlign.left,
                   style: TextStyle(color: Colors.white))),
         )
@@ -161,7 +161,7 @@ SliverToBoxAdapter classCard(input) {
         ListTile(
           leading: getRelevantIcon(input.substring(0, 4)),
           title: Text(input),
-          subtitle: Text(''),
+          subtitle: const Text(''),
         ),
       ],
     ),

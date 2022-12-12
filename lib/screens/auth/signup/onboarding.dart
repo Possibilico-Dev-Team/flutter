@@ -41,7 +41,7 @@ class _OnBoardState extends State<OnBoard> {
                 backgroundColor: Colors.white,
                 body: Container(
                   padding: const EdgeInsets.symmetric(
-                      vertical: 50.0, horizontal: 20.0),
+                      vertical: 30.0, horizontal: 20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -96,7 +96,7 @@ class _OnBoardState extends State<OnBoard> {
                       ),
                       Text(
                         majorError != null ? majorError as String : '',
-                        style: TextStyle(color: Colors.red, fontSize: 10),
+                        style: TextStyle(color: Colors.red[800], fontSize: 12),
                       ),
                       const Spacer(),
                       ElevatedButton(
@@ -106,8 +106,7 @@ class _OnBoardState extends State<OnBoard> {
                         onPressed: () async {
                           if (fnController.text != '' &&
                               lnController.text != '' &&
-                              major is String &&
-                              major != '') {
+                              major is String) {
                             Map<String, dynamic> newData = {
                               'firstName': fnController.text,
                               'lastName': lnController.text,
@@ -116,12 +115,21 @@ class _OnBoardState extends State<OnBoard> {
                             database.addDoc(
                                 'user', user?.id() as String, newData);
                           } else {
-                            print('error detected in onboard');
-                            setState(() {
-                              print('error detected in onboard setstate');
-                              lNameError =
-                                  'First Name, Last Name, or major is empty';
-                            });
+                            if (fnController.text.isEmpty) {
+                              setState(() {
+                                fNameError = 'Name cannot be empty';
+                              });
+                            }
+                            if (lnController.text.isEmpty) {
+                              setState(() {
+                                lNameError = 'Last name cannot be empty';
+                              });
+                            }
+                            if (major is! String) {
+                              setState(() {
+                                majorError = 'Major cannot be empty';
+                              });
+                            }
                           }
                         },
                       ),

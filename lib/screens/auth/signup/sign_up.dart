@@ -21,45 +21,41 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.black),
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        toolbarHeight: 40,
-      ),
       body: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
+        padding: const EdgeInsets.symmetric(vertical: 50.0, horizontal: 50.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const Spacer(),
+            const Image(image: AssetImage('assets/PossibilicoLogo.png')),
+            const Spacer(),
             const Text(
               'Sign Up',
-              style: TextStyle(
-                  fontSize: 28.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
+              style: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
             ),
-            const Padding(padding: EdgeInsets.only(top: 50.0)),
-            const Expanded(
-                child: Image(image: AssetImage('PossibilicoLogo.png'))),
+            const Padding(padding: EdgeInsets.only(top: 20.0)),
+            const Text('Email'),
             TextField(
               decoration: InputDecoration(
-                hintText: 'Email',
+                hintText: 'example@utrgv.edu',
                 errorText: emailError,
               ),
               controller: emailController,
             ),
             const Padding(padding: EdgeInsets.only(top: 50.0)),
+            const Text('Password'),
             TextField(
               obscureText: true,
               decoration: InputDecoration(
-                hintText: 'Password',
+                hintText: 'ABCD1234!',
                 errorText: passwordError,
               ),
               controller: passwordController,
             ),
-            const Padding(padding: EdgeInsets.only(top: 50.0)),
+            const Spacer(flex: 2),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(50.0)),
               child: const Text('Sign Up'),
               onPressed: () async {
                 if (emailController.text.isEmpty) {
@@ -89,6 +85,14 @@ class _SignUpState extends State<SignUp> {
                   }
                 }
               },
+            ),
+            const Padding(padding: EdgeInsets.only(top: 10.0)),
+            InkWell(
+              child: const Text(
+                "Already have an account? Log In!",
+                style: TextStyle(color: Colors.blue),
+              ),
+              onTap: () => {widget.toggleView!()},
             ),
           ],
         ),

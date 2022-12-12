@@ -5,8 +5,9 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Stream<PossibilicoUser?> get user {
-    return _auth.userChanges().map<PossibilicoUser?>(
-        ((User? user) => user != null ? PossibilicoUser(user) : null));
+    return _auth
+        .authStateChanges()
+        .map(((User? user) => user != null ? PossibilicoUser(user) : null));
   }
 
   PossibilicoUser? currentUser() {
@@ -19,7 +20,7 @@ class AuthService {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email.replaceAll(" ", ""), password: password);
-      return userCredential;
+      return PossibilicoUser(userCredential.user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'auth/wrong-password') {
         return "Incorrect Password";
@@ -38,7 +39,8 @@ class AuthService {
     try {
       UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
-      return userCredential.user;
+      print('successful registration');
+      return PossibilicoUser(userCredential.user);
     } on FirebaseAuthException catch (e) {
       print(e.message);
       return e.message;
