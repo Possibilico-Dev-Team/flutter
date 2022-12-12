@@ -19,6 +19,9 @@ class _OnBoardState extends State<OnBoard> {
       lnController = TextEditingController();
   List? programList;
   String? major;
+  String? fNameError;
+  String? lNameError;
+  String? majorError;
 
   @override
   Widget build(BuildContext context) {
@@ -50,16 +53,19 @@ class _OnBoardState extends State<OnBoard> {
                       const Padding(padding: EdgeInsets.only(top: 30.0)),
                       const Text('First Name'),
                       TextField(
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: 'John',
+                          errorText: fNameError,
                         ),
                         controller: fnController,
                       ),
                       const Padding(padding: EdgeInsets.only(top: 30)),
                       const Text('Last Name'),
                       TextField(
-                        decoration: const InputDecoration(
+                        autofocus: true,
+                        decoration: InputDecoration(
                           hintText: 'Doe',
+                          errorText: lNameError,
                         ),
                         controller: lnController,
                       ),
@@ -88,19 +94,35 @@ class _OnBoardState extends State<OnBoard> {
                           onChanged: null,
                         ),
                       ),
+                      Text(
+                        majorError != null ? majorError as String : '',
+                        style: TextStyle(color: Colors.red, fontSize: 10),
+                      ),
                       const Spacer(),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.purple[800]),
                         child: const Text('Finish'),
                         onPressed: () async {
-                          Map<String, dynamic> newData = {
-                            'firstName': fnController.text,
-                            'lastName': lnController.text,
-                            'degreeProgram': major
-                          };
-                          database.addDoc(
-                              'user', user?.id() as String, newData);
+                          if (fnController.text != '' &&
+                              lnController.text != '' &&
+                              major is String &&
+                              major != '') {
+                            Map<String, dynamic> newData = {
+                              'firstName': fnController.text,
+                              'lastName': lnController.text,
+                              'degreeProgram': major
+                            };
+                            database.addDoc(
+                                'user', user?.id() as String, newData);
+                          } else {
+                            print('error detected in onboard');
+                            setState(() {
+                              print('error detected in onboard setstate');
+                              lNameError =
+                                  'First Name, Last Name, or major is empty';
+                            });
+                          }
                         },
                       ),
                     ],
@@ -125,7 +147,9 @@ class _OnBoardState extends State<OnBoard> {
             }
           } else {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.white,
+              ),
             );
           }
         });

@@ -14,7 +14,8 @@ class _SignUpState extends State<SignUp> {
   final AuthService _auth = AuthService();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  String? passwordError = null;
+  String? passwordError;
+  String? emailError;
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +40,12 @@ class _SignUpState extends State<SignUp> {
                   color: Colors.black),
             ),
             const Padding(padding: EdgeInsets.only(top: 50.0)),
-            //Expanded(child: Image.asset("Logo.png")),
+            const Expanded(
+                child: Image(image: AssetImage('PossibilicoLogo.png'))),
             TextField(
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Email',
+                errorText: emailError,
               ),
               controller: emailController,
             ),
@@ -59,18 +62,31 @@ class _SignUpState extends State<SignUp> {
             ElevatedButton(
               child: const Text('Sign Up'),
               onPressed: () async {
-                dynamic result = await _auth.registerUserWithEmail(
-                    emailController.text, passwordController.text);
-                if (result is String) {
+                if (emailController.text.isEmpty) {
                   setState(() {
-                    passwordError = result;
+                    emailError = 'Email cannot be blank';
                   });
-                } else if (result is User) {
-                  print(result);
-                } else {
+                }
+                if (passwordController.text.isEmpty) {
                   setState(() {
-                    passwordError = result.toString();
+                    passwordError = 'Password cannot be blank';
                   });
+                }
+                if (emailController.text.isNotEmpty &&
+                    passwordController.text.isNotEmpty) {
+                  dynamic result = await _auth.registerUserWithEmail(
+                      emailController.text, passwordController.text);
+                  if (result is String) {
+                    setState(() {
+                      passwordError = result;
+                    });
+                  } else if (result is User) {
+                    print(result);
+                  } else {
+                    setState(() {
+                      passwordError = result.toString();
+                    });
+                  }
                 }
               },
             ),
