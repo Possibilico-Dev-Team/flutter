@@ -34,8 +34,6 @@ class _OnBoardState extends State<OnBoard> {
         future: Future.wait(
             [database.getCollection('major'), database.getCollection('minor')]),
         builder: (context, snapshot) {
-          String errorText = '';
-
           if (snapshot.hasData) {
             dynamic data = snapshot.data;
             // Validate data
@@ -118,27 +116,24 @@ class _OnBoardState extends State<OnBoard> {
               );
             } else {
               // Save firestore query error
-              errorText =
-                  'Error: ${data is String ? data : 'Firestore query returned \'$data\''}';
+              // return view with error
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Error'),
+                ),
+                body: Column(
+                  children: [
+                    const Spacer(),
+                    Text(
+                        'Error: ${data is String ? data : 'Firestore query returned \'$data\''}'),
+                    const Spacer(),
+                  ],
+                ),
+              );
             }
           } else {
-            // No data was returned from future, save error string
-            errorText = 'Error: No data returned from future';
+            return Scaffold(body: CircularProgressIndicator());
           }
-
-          // return view with error
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Error'),
-            ),
-            body: Column(
-              children: [
-                const Spacer(),
-                Text(errorText),
-                const Spacer(),
-              ],
-            ),
-          );
         });
   }
 }
