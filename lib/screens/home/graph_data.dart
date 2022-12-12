@@ -8,6 +8,8 @@ import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'dart:async';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
+final ScrollController myScrollWorks = ScrollController();
+
 class GraphData extends StatefulWidget {
   GraphData({Key? key}) : super(key: key);
 
@@ -33,21 +35,20 @@ class _GraphDataState extends State<GraphData> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Your Data Report'),
-        ),
-        body: Column(children: [
+    return (PrimaryScrollController(
+        controller: myScrollWorks,
+        child: CustomScrollView(slivers: [
           //Initialize the chart widget
-          SfCartesianChart(
-              primaryXAxis: CategoryAxis(),
-              // Chart title
-              title: ChartTitle(text: 'Credit Enrollment Hours'),
-              // Enable legend
-              legend: Legend(isVisible: true),
-              // Enable tooltip
-              tooltipBehavior: TooltipBehavior(enable: true),
-              series: <ChartSeries<_SalesData, String>>[
+          SliverToBoxAdapter(
+              child: SfCartesianChart(
+                  primaryXAxis: CategoryAxis(),
+                  // Chart title
+                  title: ChartTitle(text: 'Credit Enrollment Hours'),
+                  // Enable legend
+                  legend: Legend(isVisible: true),
+                  // Enable tooltip
+                  tooltipBehavior: TooltipBehavior(enable: true),
+                  series: <ChartSeries<_SalesData, String>>[
                 LineSeries<_SalesData, String>(
                     dataSource: data,
                     xValueMapper: (_SalesData sales, _) => sales.year,
@@ -55,8 +56,9 @@ class _GraphDataState extends State<GraphData> {
                     name: 'Hours',
                     // Enable data label
                     dataLabelSettings: DataLabelSettings(isVisible: true))
-              ]),
-          Container(
+              ])),
+          SliverToBoxAdapter(
+              child: Container(
             color: Colors.black,
             child: Row(
               children: <Widget>[
@@ -68,18 +70,20 @@ class _GraphDataState extends State<GraphData> {
                 )
               ],
             ),
-          ),
+          )),
 
-          Padding(
+          SliverToBoxAdapter(
+              child: Padding(
             //SPACER
             padding: const EdgeInsets.only(bottom: 15.0, top: 15.0),
             child: Text(
               '',
               style: TextStyle(color: Colors.white),
             ),
-          ),
+          )),
 
-          Row /*or Column*/ (
+          SliverToBoxAdapter(
+              child: Row /*or Column*/ (
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               Icon(Icons.query_stats_rounded, size: 50),
@@ -87,17 +91,19 @@ class _GraphDataState extends State<GraphData> {
               Icon(Icons.pending_actions_rounded, size: 50),
               Icon(Icons.person_rounded, size: 50),
             ],
-          ),
-          Padding(
+          )),
+          SliverToBoxAdapter(
+              child: Padding(
             //SPACER
             padding: const EdgeInsets.only(bottom: 15.0, top: 5.0),
             child: Text(
               '',
               style: TextStyle(color: Colors.white),
             ),
-          ),
+          )),
 
-          Row(
+          SliverToBoxAdapter(
+              child: Row(
             children: <Widget>[
               Flexible(
                 child: Padding(
@@ -270,16 +276,18 @@ class _GraphDataState extends State<GraphData> {
                 ),
               ),
             ],
-          ),
-          Padding(
+          )),
+          SliverToBoxAdapter(
+              child: Padding(
             //SPACER
             padding: const EdgeInsets.only(bottom: 15.0, top: 15.0),
             child: Text(
               '',
               style: TextStyle(color: Colors.white),
             ),
-          ),
-          Container(
+          )),
+          SliverToBoxAdapter(
+              child: Container(
             color: Colors.black,
             child: Row(
               children: <Widget>[
@@ -291,18 +299,20 @@ class _GraphDataState extends State<GraphData> {
                 )
               ],
             ),
-          ),
+          )),
 
-          Padding(
+          SliverToBoxAdapter(
+              child: Padding(
             //SPACER
             padding: const EdgeInsets.only(bottom: 15.0, top: 15.0),
             child: Text(
               '',
               style: TextStyle(color: Colors.white),
             ),
-          ),
+          )),
 
-          Row /*or Column*/ (
+          SliverToBoxAdapter(
+              child: Row /*or Column*/ (
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               Container(
@@ -330,8 +340,8 @@ class _GraphDataState extends State<GraphData> {
                 ),
               ),
             ],
-          ),
-        ]));
+          )),
+        ])));
   }
 }
 

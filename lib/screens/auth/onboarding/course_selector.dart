@@ -163,68 +163,20 @@ class getCourseRecs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
-        child: ListView(shrinkWrap: true, children: [
-      ExpansionTile(
-        leading: getRelevantIcon("CSCI"),
-        title: Text(
-          "CSCI 1370",
-        ),
-        children: <Widget>[
-          ListTile(
-            title: Text(
-              "Unlocks Courses:" +
-                  "\n" +
-                  "CSCI 2333" +
-                  "\n" +
-                  "CSCI 2344" +
-                  "\n" +
-                  "CSCI 2380" +
-                  "\n" +
-                  "CSCI 3310" +
-                  "\n" +
-                  "CSCI 3326",
-              style: TextStyle(),
-            ),
-          )
-        ],
+        child: ExpansionTile(
+      leading: getRelevantIcon("CSCI"),
+      title: Text(
+        "CSCI 3333",
       ),
-      ExpansionTile(
-        leading: getRelevantIcon("CSCI"),
-        title: Text(
-          "CSCI 2380",
-        ),
-        children: <Widget>[
-          ListTile(
-            title: Text(
-              "Unlocks Courses:" +
-                  "\n" +
-                  "CSCI 3333" +
-                  "\n" +
-                  "CSCI 3336" +
-                  "\n" +
-                  "CSCI 3340" +
-                  "\n" +
-                  "CSCI 4335",
-              style: TextStyle(),
-            ),
-          )
-        ],
-      ),
-      ExpansionTile(
-        leading: getRelevantIcon("CSCI"),
-        title: Text(
-          "CSCI 3333",
-        ),
-        children: <Widget>[
-          ListTile(
-            title: Text(
-              "Unlocks Courses:" + "\n" + "CSCI 4333" + "\n" + "CSCI 4325",
-              style: TextStyle(),
-            ),
-          )
-        ],
-      ),
-    ]));
+      children: <Widget>[
+        ListTile(
+          title: Text(
+            "Unlocks Courses:",
+            style: TextStyle(),
+          ),
+        )
+      ],
+    ));
   }
 }
 
@@ -300,14 +252,14 @@ class getClasses extends StatelessWidget {
   }
 }
 
-class Classes extends StatefulWidget {
-  const Classes({super.key});
+class CourseSelector extends StatefulWidget {
+  const CourseSelector({super.key});
 
   @override
-  State<Classes> createState() => _ClassesState();
+  State<CourseSelector> createState() => _CourseSelectorState();
 }
 
-class _ClassesState extends State<Classes> {
+class _CourseSelectorState extends State<CourseSelector> {
   @override
   // Initial Selected Value
   String dropdownvalue = 'ACCT';
@@ -447,20 +399,18 @@ class _ClassesState extends State<Classes> {
   ];
 
   Widget build(BuildContext context) {
-    return CustomScrollView(slivers: <Widget>[
-      SliverToBoxAdapter(
-          child: Card(
-        child: Text("Computer Science Recommended"),
-      )),
-      getCourseRecs(semester: int.parse(semestervalue)),
-      SliverToBoxAdapter(
-          child: Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-            Container(
-                child: Center(
-                    child: DropdownButton(
+    return Scaffold(
+      body: CustomScrollView(slivers: <Widget>[
+        const SliverToBoxAdapter(
+            child: Padding(
+          padding: EdgeInsets.only(top: 50),
+        )),
+        //getCourseRecs(semester: int.parse(semestervalue)),
+        SliverToBoxAdapter(
+            child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 30.0),
+          child: Row(children: [
+            DropdownButton(
               value: dropdownvalue,
               icon: const Icon(Icons.keyboard_arrow_down),
               items: items.map((String items) {
@@ -474,16 +424,9 @@ class _ClassesState extends State<Classes> {
                   dropdownvalue = newValue!;
                 });
               },
-            )))
-          ]))),
-      SliverToBoxAdapter(
-          child: Center(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-            Container(
-                child: Center(
-                    child: DropdownButton(
+            ),
+            const Spacer(),
+            DropdownButton(
               value: semestervalue,
               icon: const Icon(Icons.keyboard_arrow_down),
               items: items2.map((String items2) {
@@ -497,18 +440,26 @@ class _ClassesState extends State<Classes> {
                   semestervalue = newValue!;
                 });
               },
-            )))
-          ]))),
-      SliverToBoxAdapter(
-          child: Card(
-        child: Text(decodeSemesterCode(semestervalue) + " - Full Course List"),
-      )),
-      SliverToBoxAdapter(
-          child: getClasses(
-              key: UniqueKey(),
-              subject: dropdownvalue,
-              semester: semestervalue)),
-    ]);
+            )
+          ]),
+        )),
+        SliverToBoxAdapter(
+            child: Card(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+            child: Text(
+              "${decodeSemesterCode(semestervalue)} - Full Course List",
+              style: const TextStyle(fontSize: 18),
+            ),
+          ),
+        )),
+        SliverToBoxAdapter(
+            child: getClasses(
+                key: UniqueKey(),
+                subject: dropdownvalue,
+                semester: semestervalue)),
+      ]),
+    );
   }
 }
 
@@ -517,6 +468,11 @@ Widget _buildExpandableTile(key, value) {
     leading: getRelevantIcon(key.substring(0, 4)),
     title: Text(
       key,
+    ),
+    trailing: const Checkbox(
+      checkColor: Colors.white,
+      value: false,
+      onChanged: null,
     ),
     children: <Widget>[
       ListTile(
@@ -548,15 +504,14 @@ class CourseList extends StatelessWidget {
       valuesList.add(finOut);
     }
     return Container(
-        child: ListView.separated(
-      scrollDirection: Axis.vertical,
+        child: ListView.builder(
+      physics: const BouncingScrollPhysics(),
       shrinkWrap: true,
       padding: const EdgeInsets.all(8),
       itemCount: photos.keys.length,
       itemBuilder: (BuildContext context, int index) {
         return _buildExpandableTile(keysList[index], valuesList[index]);
       },
-      separatorBuilder: (BuildContext context, int index) => const Divider(),
     ));
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:possibilico/models/possibilico_user.dart';
-import 'package:possibilico/screens/auth/signup/program_picker.dart';
 import 'package:possibilico/services/db.dart';
 import 'package:provider/provider.dart';
 
@@ -17,86 +16,83 @@ class _OnBoardState extends State<OnBoard> {
   List<DropdownMenuItem<String>>? majorList, minorList;
   TextEditingController fnController = TextEditingController(),
       lnController = TextEditingController();
-  List? programList;
-  String? major;
-  String? fNameError;
-  String? lNameError;
-  String? majorError;
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<PossibilicoUser?>(context);
+    List<DropdownMenuItem<String>> toDropdownItems(dynamic dataList) {
+      return dataList
+          .map<DropdownMenuItem<String>>(((Map<String, dynamic> item) {
+        return DropdownMenuItem<String>(
+          value: item['name'],
+          child: Text(item['value']),
+        );
+      })).toList();
+    }
 
     return FutureBuilder(
-        future: database.getDoc('data', 'programs'),
+        future: Future.wait(
+            [database.getCollection('major'), database.getCollection('minor')]),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             dynamic data = snapshot.data;
             // Validate data
-            if (data is Map<String, dynamic>) {
-              programList = (data['array'] as List).toSet().toList();
+            if (data[0] is List<Map<String, dynamic>>) {
+              majorList = toDropdownItems(data[0]);
+              minorList = toDropdownItems(data[1]);
 
               // return onboarding scaffold
               return Scaffold(
                 backgroundColor: Colors.white,
+                appBar: AppBar(
+                  backgroundColor: Colors.purple[800],
+                  elevation: 0.0,
+                  title: const Text('User Information'),
+                ),
                 body: Container(
                   padding: const EdgeInsets.symmetric(
                       vertical: 50.0, horizontal: 20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'User Information',
-                        style: TextStyle(
-                            fontSize: 28.0, fontWeight: FontWeight.bold),
-                      ),
-                      const Padding(padding: EdgeInsets.only(top: 30.0)),
                       const Text('First Name'),
                       TextField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'John',
-                          errorText: fNameError,
                         ),
                         controller: fnController,
                       ),
                       const Padding(padding: EdgeInsets.only(top: 30)),
                       const Text('Last Name'),
                       TextField(
-                        autofocus: true,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Doe',
-                          errorText: lNameError,
                         ),
                         controller: lnController,
                       ),
-                      const Padding(padding: EdgeInsets.only(top: 30)),
-                      const Text('Degree Program'),
-                      TextButton(
-                        style:
-                            const ButtonStyle(alignment: Alignment.centerLeft),
-                        onPressed: () {
-                          _navigateAndDisplaySelection(context);
-                        },
-                        child: DropdownButton(
-                          isExpanded: true,
-                          style: const TextStyle(
-                            overflow: TextOverflow.visible,
+                      const Padding(padding: EdgeInsets.only(top: 20.0)),
+                      Row(
+                        children: [
+                          const Spacer(),
+                          DropdownButton<String>(
+                            hint: const Text('Pick a Major'),
+                            value: majorValue,
+                            onChanged: (String? value) => setState(() {
+                              majorValue = value;
+                            }),
+                            items: majorList,
                           ),
-                          hint: const Text('Choose a Major'),
-                          items: major != null
-                              ? [
-                                  DropdownMenuItem(
-                                      value: major,
-                                      child: Text(major as String))
-                                ]
-                              : null,
-                          value: major,
-                          onChanged: null,
-                        ),
-                      ),
-                      Text(
-                        majorError != null ? majorError as String : '',
-                        style: TextStyle(color: Colors.red, fontSize: 10),
+                          const Spacer(),
+                          DropdownButton<String>(
+                            hint: const Text('Pick a Minor'),
+                            value: minorValue,
+                            onChanged: (String? value) => setState(() {
+                              minorValue = value;
+                            }),
+                            items: minorList,
+                          ),
+                          const Spacer(),
+                        ],
                       ),
                       const Spacer(),
                       ElevatedButton(
@@ -104,25 +100,14 @@ class _OnBoardState extends State<OnBoard> {
                             backgroundColor: Colors.purple[800]),
                         child: const Text('Finish'),
                         onPressed: () async {
-                          if (fnController.text != '' &&
-                              lnController.text != '' &&
-                              major is String &&
-                              major != '') {
-                            Map<String, dynamic> newData = {
-                              'firstName': fnController.text,
-                              'lastName': lnController.text,
-                              'degreeProgram': major
-                            };
-                            database.addDoc(
-                                'user', user?.id() as String, newData);
-                          } else {
-                            print('error detected in onboard');
-                            setState(() {
-                              print('error detected in onboard setstate');
-                              lNameError =
-                                  'First Name, Last Name, or major is empty';
-                            });
-                          }
+                          Map<String, dynamic> newData = {
+                            'first name': fnController.text,
+                            'last name': lnController.text,
+                            'major': majorValue,
+                            'minor': minorValue
+                          };
+                          database.addDoc(
+                              'user', user?.id() as String, newData);
                         },
                       ),
                     ],
@@ -131,6 +116,7 @@ class _OnBoardState extends State<OnBoard> {
               );
             } else {
               // Save firestore query error
+              // return view with error
               return Scaffold(
                 appBar: AppBar(
                   title: const Text('Error'),
@@ -146,22 +132,12 @@ class _OnBoardState extends State<OnBoard> {
               );
             }
           } else {
-            return const Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.white,
-              ),
-            );
+            return Scaffold(body: CircularProgressIndicator());
           }
         });
   }
+}
 
-  _navigateAndDisplaySelection(BuildContext context) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ProgramPicker(programList)),
-    );
-    setState(() {
-      major = result;
-    });
-  }
+class onBoardingScaffold extends Scaffold {
+  const onBoardingScaffold({super.body});
 }

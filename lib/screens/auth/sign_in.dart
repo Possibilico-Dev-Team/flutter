@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:possibilico/screens/auth/signup/sign_up.dart';
+import 'package:possibilico/screens/auth/sign_up.dart';
 import 'package:possibilico/services/auth.dart';
 
 class SignIn extends StatefulWidget {
-  final Function? toggleView;
-  const SignIn({super.key, this.toggleView});
+  final Function toggleView;
+  const SignIn({super.key, required this.toggleView});
 
   @override
   State<SignIn> createState() => _SignInState();
@@ -27,13 +27,14 @@ class _SignInState extends State<SignIn> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const Spacer(),
+            const Image(image: AssetImage('assets/PossibilicoLogo.png')),
+            const Spacer(),
             const Text(
-              'Login',
-              style: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
+              'Log In',
+              style: TextStyle(fontSize: 28.0),
             ),
-            const Padding(padding: EdgeInsets.only(top: 50.0)),
-            const Expanded(
-                child: Image(image: AssetImage('PossibilicoLogo.png'))),
+            const Padding(padding: EdgeInsets.only(top: 20.0)),
             const Text('Email'),
             TextField(
               decoration: InputDecoration(
@@ -57,8 +58,9 @@ class _SignInState extends State<SignIn> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50.0)),
-              child: const Text('Sign In'),
+                  minimumSize: const Size.fromHeight(50.0),
+                  backgroundColor: const Color(0xFF5A6499)),
+              child: const Text('Log In'),
               onPressed: () async {
                 if (emailController.text.isEmpty) {
                   setState(() {
@@ -92,12 +94,9 @@ class _SignInState extends State<SignIn> {
             InkWell(
               child: const Text(
                 "Don't have an account? Sign Up!",
-                style: TextStyle(color: Colors.blue),
+                style: TextStyle(color: Color(0xFF5A6499)),
               ),
-              onTap: () => {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const SignUp()))
-              },
+              onTap: () => {widget.toggleView()},
             ),
           ],
         ),

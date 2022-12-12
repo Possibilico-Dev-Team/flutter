@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:possibilico/models/possibilico_user.dart';
 import 'package:possibilico/screens/home/sharedData&Fun.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
+
+import '../../services/auth.dart';
+import '../../services/db.dart';
 
 Map finishedCourses = {
   '201910': [
@@ -100,7 +104,7 @@ Widget ListFinal() {
 
 const headerStyle = TextStyle(
     color: Colors.white,
-    fontSize: 50,
+    fontSize: 30,
     shadows: <Shadow>[
       Shadow(
         blurRadius: 4.0,
@@ -109,42 +113,55 @@ const headerStyle = TextStyle(
     ],
     fontStyle: FontStyle.italic);
 
-Widget Header() {
-  return (Container(
-      decoration: BoxDecoration(
-        image: const DecorationImage(
-          image: AssetImage('utrgv-blur.jpg'),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Column(children: [
-        Row(children: [
-          Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                  image: NetworkImage(
-                      'https://scontent.fftw1-1.fna.fbcdn.net/v/t39.30808-6/311835908_5983056418373420_1779428621412515513_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=pyDb_zw3JsEAX-nFRNI&_nc_ht=scontent.fftw1-1.fna&oh=00_AfBc0mFHUMHRBuMGWvh4VyR6YbDoNJD-Hy1vWrtfGYBjNQ&oe=63985B24'),
-                  fit: BoxFit.fill),
-            ),
-          ),
-          Container(
-              padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-              child: Text("Miguel Ramirez", style: headerStyle)),
-        ]),
-        Container(
-          padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
-          width: double.infinity,
-          color: Colors.black,
-          child: Container(
-              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-              child: Text("Course Progression",
-                  textAlign: TextAlign.left,
-                  style: TextStyle(color: Colors.white))),
-        )
-      ])));
+Widget Header(String userID) {
+  return FutureBuilder(
+      future: DataService().getDoc('user', userID),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final userName =
+              '${snapshot.data['firstName']} ${snapshot.data['lastName']}';
+          return (Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/utrgv-blur.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Column(children: [
+                Row(children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+                    height: 100,
+                    width: 100,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                          image: NetworkImage(
+                              'https://as2.ftcdn.net/v2/jpg/00/64/67/63/1000_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg'),
+                          fit: BoxFit.fill),
+                    ),
+                  ),
+                  Container(
+                      padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
+                      child: Text(userName, style: headerStyle)),
+                ]),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                  width: double.infinity,
+                  color: Colors.black,
+                  child: Container(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      child: const Text("Course Progression",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(color: Colors.white))),
+                )
+              ])));
+        } else {
+          return Container(
+            child: CircularProgressIndicator(),
+          );
+        }
+      });
 }
 
 @override
@@ -215,8 +232,11 @@ class Index extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<PossibilicoUser?>(context);
+
     var sliverCardList = <Widget>[];
-    sliverCardList.add(SliverToBoxAdapter(child: Container(child: Header())));
+    sliverCardList.add(SliverToBoxAdapter(
+        child: Container(child: Header(user?.id() as String))));
     for (var prop in finishedCourses.keys) {
       sliverCardList.add(cardSliver(prop));
 

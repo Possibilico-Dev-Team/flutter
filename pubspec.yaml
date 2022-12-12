@@ -31,6 +31,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
   syncfusion_flutter_charts: ^20.3.60
   syncfusion_flutter_gauges: ^20.3.60
   syncfusion_flutter_sliders: ^20.3.60
