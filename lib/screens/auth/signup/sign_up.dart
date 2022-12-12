@@ -31,7 +31,7 @@ class _SignUpState extends State<SignUp> {
             const Spacer(),
             const Text(
               'Sign Up',
-              style: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 28.0),
             ),
             const Padding(padding: EdgeInsets.only(top: 20.0)),
             const Text('Email'),
@@ -55,7 +55,8 @@ class _SignUpState extends State<SignUp> {
             const Spacer(flex: 2),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50.0)),
+                  minimumSize: const Size.fromHeight(50.0),
+                  backgroundColor: const Color(0xFF5A6499)),
               child: const Text('Sign Up'),
               onPressed: () async {
                 if (emailController.text.isEmpty) {
@@ -90,7 +91,7 @@ class _SignUpState extends State<SignUp> {
             InkWell(
               child: const Text(
                 "Already have an account? Log In!",
-                style: TextStyle(color: Colors.blue),
+                style: TextStyle(color: Color(0xFF5A6499)),
               ),
               onTap: () => {widget.toggleView!()},
             ),

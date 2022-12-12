@@ -31,8 +31,8 @@ class _SignInState extends State<SignIn> {
             const Image(image: AssetImage('assets/PossibilicoLogo.png')),
             const Spacer(),
             const Text(
-              'Login',
-              style: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
+              'Log In',
+              style: TextStyle(fontSize: 28.0),
             ),
             const Padding(padding: EdgeInsets.only(top: 20.0)),
             const Text('Email'),
@@ -58,8 +58,9 @@ class _SignInState extends State<SignIn> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50.0)),
-              child: const Text('Sign In'),
+                  minimumSize: const Size.fromHeight(50.0),
+                  backgroundColor: const Color(0xFF5A6499)),
+              child: const Text('Log In'),
               onPressed: () async {
                 if (emailController.text.isEmpty) {
                   setState(() {
@@ -93,7 +94,7 @@ class _SignInState extends State<SignIn> {
             InkWell(
               child: const Text(
                 "Don't have an account? Sign Up!",
-                style: TextStyle(color: Colors.blue),
+                style: TextStyle(color: Color(0xFF5A6499)),
               ),
               onTap: () => {widget.toggleView!()},
             ),
