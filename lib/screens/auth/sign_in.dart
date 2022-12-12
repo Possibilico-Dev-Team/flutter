@@ -21,36 +21,40 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        elevation: 0.0,
-        title: const Text('Sign In'),
-      ),
       body: Container(
-        decoration: BoxDecoration(
-          color: Color.fromARGB(255, 202, 255, 195),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(vertical: 50.0, horizontal: 50.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(child: Image.asset("Logo.png")),
+            const Text(
+              'Login',
+              style: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold),
+            ),
+            const Padding(padding: EdgeInsets.only(top: 50.0)),
+            //Image(image: AssetImage('PossibilicoLogo.png')),
+            const Text('Email'),
             TextField(
               decoration: const InputDecoration(
-                hintText: 'Email',
+                hintText: 'example@utrgv.edu',
               ),
               controller: emailController,
             ),
             const Padding(padding: EdgeInsets.only(top: 50.0)),
+            const Text('Password'),
             TextField(
               obscureText: true,
               decoration: InputDecoration(
-                hintText: 'Password',
+                hintText: 'ABCD1234!',
                 errorText: passwordError,
               ),
               controller: passwordController,
             ),
-            const Padding(padding: EdgeInsets.only(top: 50.0)),
+            const Spacer(
+              flex: 2,
+            ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(50.0)),
               child: const Text('Sign In'),
               onPressed: () async {
                 dynamic result = await _auth.signInWithEmail(
@@ -78,9 +82,6 @@ class _SignInState extends State<SignIn> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => const SignUp()))
               },
-            ),
-            const Spacer(
-              flex: 2,
             ),
           ],
         ),

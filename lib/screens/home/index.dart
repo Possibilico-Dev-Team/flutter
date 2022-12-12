@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
-import 'package:possibilico/models/possibilico_user.dart';
-import 'package:possibilico/screens/home/iconDict.dart';
+import 'package:possibilico/screens/home/sharedData&Fun.dart';
 
 Map finishedCourses = {
   '201910': [

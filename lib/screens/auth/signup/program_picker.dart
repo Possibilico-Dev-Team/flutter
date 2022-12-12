@@ -105,7 +105,8 @@ class _ProgramPickerState extends State<ProgramPicker> {
 
   void searchMajors(String query) {
     final suggestions = widget.data
-        ?.where((program) => program.toString().toLowerCase().contains(query))
+        ?.where((program) =>
+            program.toString().toLowerCase().contains(query.toLowerCase()))
         .toList();
     setState(() {
       programs = suggestions as List;

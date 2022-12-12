@@ -14,25 +14,32 @@ class _SignUpState extends State<SignUp> {
   final AuthService _auth = AuthService();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  String passwordError = '';
+  String? passwordError = null;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        iconTheme: const IconThemeData(color: Colors.black),
+        backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: const Text('Sign Up'),
+        toolbarHeight: 40,
       ),
       body: Container(
-        decoration: BoxDecoration(
-          color: Color.fromARGB(255, 206, 255, 247),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(child: Image.asset("Logo.png")),
+            const Text(
+              'Sign Up',
+              style: TextStyle(
+                  fontSize: 28.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
+            ),
+            const Padding(padding: EdgeInsets.only(top: 50.0)),
+            //Expanded(child: Image.asset("Logo.png")),
             TextField(
               decoration: const InputDecoration(
                 hintText: 'Email',
@@ -66,9 +73,6 @@ class _SignUpState extends State<SignUp> {
                   });
                 }
               },
-            ),
-            const Spacer(
-              flex: 2,
             ),
           ],
         ),

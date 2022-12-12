@@ -4,7 +4,6 @@ import 'package:possibilico/models/possibilico_user.dart';
 import 'package:possibilico/screens/auth/authenticate.dart';
 import 'package:possibilico/screens/auth/signup/onboarding.dart';
 import 'package:possibilico/screens/home/home.dart';
-import 'package:possibilico/services/db.dart';
 import 'package:provider/provider.dart';
 
 class Wrapper extends StatelessWidget {

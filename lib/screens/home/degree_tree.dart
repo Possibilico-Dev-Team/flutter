@@ -1,8 +1,6 @@
-import 'dart:math';
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:graphite/core/matrix.dart';
-import 'package:graphite/core/typings.dart';
 import 'package:graphite/graphite.dart';
 
 const presetBasic2 =
