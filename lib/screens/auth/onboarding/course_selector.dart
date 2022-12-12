@@ -469,6 +469,11 @@ Widget _buildExpandableTile(key, value) {
     title: Text(
       key,
     ),
+    trailing: const Checkbox(
+      checkColor: Colors.white,
+      value: false,
+      onChanged: null,
+    ),
     children: <Widget>[
       ListTile(
         title: Text(
