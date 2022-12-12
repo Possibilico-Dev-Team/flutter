@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:possibilico/services/auth.dart';
 
 class SignUp extends StatefulWidget {
-  final Function? toggleView;
-  const SignUp({super.key, this.toggleView});
+  final Function toggleView;
+  const SignUp({super.key, required this.toggleView});
 
   @override
   State<SignUp> createState() => _SignUpState();
@@ -93,7 +93,7 @@ class _SignUpState extends State<SignUp> {
                 "Already have an account? Log In!",
                 style: TextStyle(color: Color(0xFF5A6499)),
               ),
-              onTap: () => {widget.toggleView!()},
+              onTap: () => {widget.toggleView()},
             ),
           ],
         ),

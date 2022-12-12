@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:possibilico/models/possibilico_user.dart';
 import 'package:possibilico/screens/auth/authenticate.dart';
-import 'package:possibilico/screens/auth/signup/onboarding.dart';
+import 'package:possibilico/screens/auth/onboarding/onboarding.dart';
 import 'package:possibilico/screens/home/home.dart';
 import 'package:possibilico/services/auth.dart';
 import 'package:possibilico/services/db.dart';

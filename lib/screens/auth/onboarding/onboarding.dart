@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:possibilico/models/possibilico_user.dart';
-import 'package:possibilico/screens/auth/signup/program_picker.dart';
+import 'package:possibilico/screens/auth/onboarding/program_picker.dart';
 import 'package:possibilico/services/db.dart';
 import 'package:provider/provider.dart';
 
