@@ -56,7 +56,7 @@ class _SignUpState extends State<SignUp> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   minimumSize: const Size.fromHeight(50.0),
-                  backgroundColor: const Color(0xFF5A6499)),
+                  backgroundColor: const Color(0xFFED6571)),
               child: const Text('Sign Up'),
               onPressed: () async {
                 if (emailController.text.isEmpty) {
@@ -91,7 +91,7 @@ class _SignUpState extends State<SignUp> {
             InkWell(
               child: const Text(
                 "Already have an account? Log In!",
-                style: TextStyle(color: Color(0xFF5A6499)),
+                style: TextStyle(color: Color(0xFFED6571)),
               ),
               onTap: () => {widget.toggleView()},
             ),

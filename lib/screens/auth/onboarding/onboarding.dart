@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:possibilico/models/possibilico_user.dart';
-import 'package:possibilico/screens/auth/onboarding/program_picker.dart';
+import 'package:possibilico/screens/auth/onboarding/course_selector.dart';
+import 'package:possibilico/screens/auth/onboarding/program_selector.dart';
 import 'package:possibilico/services/db.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +20,7 @@ class _OnBoardState extends State<OnBoard> {
       lnController = TextEditingController();
   List? programList;
   String? major;
+  Map? courses;
   String? fNameError;
   String? lNameError;
   String? majorError;
@@ -39,101 +41,132 @@ class _OnBoardState extends State<OnBoard> {
               // return onboarding scaffold
               return Scaffold(
                 backgroundColor: Colors.white,
-                body: Container(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 30.0, horizontal: 20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Text(
-                        'User Information',
-                        style: TextStyle(
-                            fontSize: 28.0, fontWeight: FontWeight.bold),
-                      ),
-                      const Padding(padding: EdgeInsets.only(top: 30.0)),
-                      const Text('First Name'),
-                      TextField(
-                        decoration: InputDecoration(
-                          hintText: 'John',
-                          errorText: fNameError,
+                body: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 30.0, horizontal: 20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Text(
+                          'User Information',
+                          style: TextStyle(
+                              fontSize: 28.0, fontWeight: FontWeight.bold),
                         ),
-                        controller: fnController,
-                      ),
-                      const Padding(padding: EdgeInsets.only(top: 30)),
-                      const Text('Last Name'),
-                      TextField(
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          hintText: 'Doe',
-                          errorText: lNameError,
-                        ),
-                        controller: lnController,
-                      ),
-                      const Padding(padding: EdgeInsets.only(top: 30)),
-                      const Text('Degree Program'),
-                      TextButton(
-                        style:
-                            const ButtonStyle(alignment: Alignment.centerLeft),
-                        onPressed: () {
-                          _navigateAndDisplaySelection(context);
-                        },
-                        child: DropdownButton(
-                          isExpanded: true,
-                          style: const TextStyle(
-                            overflow: TextOverflow.visible,
+                        const Padding(padding: EdgeInsets.only(top: 30.0)),
+                        const Text('First Name'),
+                        TextField(
+                          decoration: InputDecoration(
+                            hintText: 'John',
+                            errorText: fNameError,
                           ),
-                          hint: const Text('Choose a Major'),
-                          items: major != null
-                              ? [
-                                  DropdownMenuItem(
-                                      value: major,
-                                      child: Text(major as String))
-                                ]
-                              : null,
-                          value: major,
-                          onChanged: null,
+                          controller: fnController,
                         ),
-                      ),
-                      Text(
-                        majorError != null ? majorError as String : '',
-                        style: TextStyle(color: Colors.red[800], fontSize: 12),
-                      ),
-                      const Spacer(),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.purple[800]),
-                        child: const Text('Finish'),
-                        onPressed: () async {
-                          if (fnController.text != '' &&
-                              lnController.text != '' &&
-                              major is String) {
-                            Map<String, dynamic> newData = {
-                              'firstName': fnController.text,
-                              'lastName': lnController.text,
-                              'degreeProgram': major
-                            };
-                            database.addDoc(
-                                'user', user?.id() as String, newData);
-                          } else {
-                            if (fnController.text.isEmpty) {
-                              setState(() {
-                                fNameError = 'Name cannot be empty';
-                              });
+                        const Padding(padding: EdgeInsets.only(top: 30)),
+                        const Text('Last Name'),
+                        TextField(
+                          autofocus: true,
+                          decoration: InputDecoration(
+                            hintText: 'Doe',
+                            errorText: lNameError,
+                          ),
+                          controller: lnController,
+                        ),
+                        const Padding(padding: EdgeInsets.only(top: 30)),
+                        const Text('Degree Program'),
+                        TextButton(
+                          style: const ButtonStyle(
+                              alignment: Alignment.centerLeft),
+                          onPressed: () {
+                            _navigateToProgramSelector(context);
+                          },
+                          child: DropdownButton(
+                            isExpanded: true,
+                            style: const TextStyle(
+                              overflow: TextOverflow.visible,
+                            ),
+                            hint: const Text('Choose a Major'),
+                            items: major != null
+                                ? [
+                                    DropdownMenuItem(
+                                        value: major,
+                                        child: Text(major as String))
+                                  ]
+                                : null,
+                            value: major,
+                            onChanged: null,
+                          ),
+                        ),
+                        Text(
+                          majorError != null ? majorError as String : '',
+                          style:
+                              TextStyle(color: Colors.red[800], fontSize: 12),
+                        ),
+                        // TODO: Add course selector
+                        const Text('Passed Courses'),
+                        TextButton(
+                          style: const ButtonStyle(
+                              alignment: Alignment.centerLeft),
+                          onPressed: () {
+                            _navigateToCourseSelector(context);
+                          },
+                          child: DropdownButton(
+                            isExpanded: true,
+                            style: const TextStyle(
+                              overflow: TextOverflow.visible,
+                            ),
+                            hint: const Text('Select Courses'),
+                            items: courses != null
+                                ? [
+                                    DropdownMenuItem(
+                                        value: courses.toString(),
+                                        child: Text(courses.toString()))
+                                  ]
+                                : null,
+                            value: courses,
+                            onChanged: null,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 200),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.purple[800]),
+                          child: const Text('Finish'),
+                          onPressed: () async {
+                            if (fnController.text != '' &&
+                                lnController.text != '' &&
+                                major is String) {
+                              Map<String, dynamic> newData = {
+                                'firstName': fnController.text,
+                                'lastName': lnController.text,
+                                'degreeProgram': major,
+                                'coursesPassed': courses
+                              };
+                              database.addDoc(
+                                  'user', user?.id() as String, newData);
+                            } else {
+                              if (fnController.text.isEmpty) {
+                                setState(() {
+                                  fNameError = 'Name cannot be empty';
+                                });
+                              }
+                              if (lnController.text.isEmpty) {
+                                setState(() {
+                                  lNameError = 'Last name cannot be empty';
+                                });
+                              }
+                              if (major is! String) {
+                                setState(() {
+                                  majorError = 'Major cannot be empty';
+                                });
+                              }
                             }
-                            if (lnController.text.isEmpty) {
-                              setState(() {
-                                lNameError = 'Last name cannot be empty';
-                              });
-                            }
-                            if (major is! String) {
-                              setState(() {
-                                majorError = 'Major cannot be empty';
-                              });
-                            }
-                          }
-                        },
-                      ),
-                    ],
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -163,13 +196,23 @@ class _OnBoardState extends State<OnBoard> {
         });
   }
 
-  _navigateAndDisplaySelection(BuildContext context) async {
+  _navigateToProgramSelector(BuildContext context) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ProgramPicker(programList)),
     );
     setState(() {
       major = result;
+    });
+  }
+
+  _navigateToCourseSelector(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CourseSelector()),
+    );
+    setState(() {
+      courses = result;
     });
   }
 }
